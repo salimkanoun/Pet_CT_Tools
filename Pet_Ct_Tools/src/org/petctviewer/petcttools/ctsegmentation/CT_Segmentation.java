@@ -47,7 +47,7 @@ public class CT_Segmentation implements PlugIn {
 	@Override
 	public void run(String arg0) {
 		weka= new WekaSegmentation(true);
-		InputStream classifier = ClassLoader.getSystemResourceAsStream("classifier5classes3d.model");
+		InputStream classifier = ClassLoader.getSystemResourceAsStream("classifier/classifier5classes3d.model");
 		weka.loadClassifier(classifier);
 		gui= new CT_Segmentation_GUI(this);
 		gui.pack();
