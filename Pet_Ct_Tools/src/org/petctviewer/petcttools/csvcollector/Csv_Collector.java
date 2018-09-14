@@ -72,28 +72,43 @@ public class Csv_Collector implements PlugIn{
 	    	  CSVFormat csvFileFormat = CSVFormat.DEFAULT;
 	    	  CSVParser csvParser = null;
 	    	  List<CSVRecord> csvRecord=null;
-	    	  int ligne=0;
+	    	  int ligneSum=0;
+	    	  int ligneThresholdSettings=0;
 	    	  int ligneNiftiRoiNumber=0;
 	    	  int ligneManualRoiNumber=0;
 	    	  int niftiNumber=0;
 	    	  int manualNumber=0;
 			try {
 				BufferedReader br = new BufferedReader(new FileReader(listOfFiles));
+				
 				System.out.println(listOfFiles);
+				
 				csvParser = CSVParser.parse(br,  csvFileFormat);
 				  //On met les records dans une list
 		    	  csvRecord=csvParser.getRecords();
+		    	  
 		    	  // On balaie le fichier ligne par ligne
 		    	  for (int j=0 ; j<csvRecord.size(); j++) {
+		    		 
 		    		  //On regarde la colonne 1 et on cherche " sum"
+		    		  if (csvRecord.get(j).size()<2) continue;
+		    		  
 		    		  String labelNum=csvRecord.get(j).get(1);
+		    		  
 		    		  if (labelNum.equals(" sum")) {
 		    			  // on trouve sum et on recupere son numero de ligne
-		    			  ligne=j;
-		    			  break;
+		    			  ligneSum=j;
 		    		  }
+		    		  
+		    		  if (labelNum.contains("SUVhi")) {
+		    			  // on trouve sum et on recupere son numero de ligne
+		    			  ligneThresholdSettings=j;
+		    			  
+		    		  }
+		    		  
 		    	  }
-		    	for (int i=(ligne+1); i<csvRecord.size(); i++) {
+		    	  
+		    	for (int i=(ligneSum+1); i<csvRecord.size(); i++) {
 		    		
 		    		  String roiNomber=csvRecord.get(i).get(0);
 		    		  if (roiNomber.contains("Number of Nifti ROIs =")) {
@@ -108,19 +123,29 @@ public class Csv_Collector implements PlugIn{
 			} catch (IOException e) {System.out.println(e + "File Reader "+ listOfFiles);}
 	    		try {
 		    	  //On recupere les valeurs qui nous interessent
-		    	  String name=csvRecord.get(ligne+1).get(0);
-		    	  String id=csvRecord.get(ligne+1).get(13);
-		    	  String date=csvRecord.get(ligne+1).get(1);
-		    	  double mtv=Double.parseDouble(csvRecord.get(ligne).get(3));
-		    	  double tlg=Double.parseDouble(csvRecord.get(ligne).get(4));
-		    	  double suvMean=Double.parseDouble(csvRecord.get(ligne).get(5));
-		    	  double suvSD=Double.parseDouble(csvRecord.get(ligne).get(6));
-		    	  double suvPeak=Double.parseDouble(csvRecord.get(ligne).get(7));
-		    	  double suvMax=Double.parseDouble(csvRecord.get(ligne).get(11));
-		    	  double qPeak=Double.parseDouble(csvRecord.get(ligne).get(9));
-		    	  double sul=Double.parseDouble(csvRecord.get(ligne+1).get(3));
+		    	  String name=csvRecord.get(ligneSum+1).get(0);
+		    	  String id=csvRecord.get(ligneSum+1).get(13);
+		    	  String date=csvRecord.get(ligneSum+1).get(1);
+		    	  double mtv=Double.parseDouble(csvRecord.get(ligneSum).get(3));
+		    	  double tlg=Double.parseDouble(csvRecord.get(ligneSum).get(4));
+		    	  double suvMean=Double.parseDouble(csvRecord.get(ligneSum).get(5));
+		    	  double suvSD=Double.parseDouble(csvRecord.get(ligneSum).get(6));
+		    	  double suvPeak=Double.parseDouble(csvRecord.get(ligneSum).get(7));
+		    	  double suvMax=Double.parseDouble(csvRecord.get(ligneSum).get(11));
+		    	  double qPeak=Double.parseDouble(csvRecord.get(ligneSum).get(9));
+		    	  double sul=Double.parseDouble(csvRecord.get(ligneSum+1).get(3));
+		    	  
+		    	  //Collect Threshold data
+		    	  String SUVlo=csvRecord.get(ligneThresholdSettings+1).get(0);
+		    	  String SUVhi=csvRecord.get(ligneThresholdSettings+1).get(1);
+		    	  String CTlo=csvRecord.get(ligneThresholdSettings+1).get(2);
+		    	  String CThi=csvRecord.get(ligneThresholdSettings+1).get(3);
+		    	  int useSUV=Integer.parseInt(csvRecord.get(ligneThresholdSettings+1).get(4).trim());
+		    	  int useCT=Integer.parseInt(csvRecord.get(ligneThresholdSettings+1).get(5).trim());
+		    	  int ctRadio=Integer.parseInt(csvRecord.get(ligneThresholdSettings+1).get(6).trim());
+		    	  
 		    	  int timer=0;
-		    	  if (!csvRecord.get(ligne+1).get(5).equals("")) timer=Integer.parseInt(csvRecord.get(ligne+1).get(5));
+		    	  if (!csvRecord.get(ligneSum+1).get(5).equals("")) timer=Integer.parseInt(csvRecord.get(ligneSum+1).get(5));
 		    	  //On recupere le nombre de ROI nifti et manual
 		    	  if (ligneNiftiRoiNumber!=0) {
 		    		  String niftiNumberString=csvRecord.get(ligneNiftiRoiNumber).get(0);
@@ -135,10 +160,11 @@ public class Csv_Collector implements PlugIn{
 		    	  } 
 		    	  //On cree un objet pour chaque patient et qu'on recuperera via un getteur
 		    	  Csv_Collector_Resultat resu=new Csv_Collector_Resultat(name, id, date, mtv, tlg, suvMean,suvSD,suvPeak,suvMax,sul,qPeak, timer, niftiNumber, manualNumber);
+		    	  resu.setThresholdOptions(SUVlo, SUVhi, CTlo, CThi, useSUV, useCT, ctRadio);
 		    	  //On ajoute cet objet dans la list des objet patient
 		    	  resultats.add(resu);
 		    	  nombreSucces++;
-	    	 }catch (Exception e) {System.out.println(e+ "File Parser"+listOfFiles+ ligne);}
+	    	 }catch (Exception e) {System.out.println(e+ "File Parser"+listOfFiles+ ligneSum);}
 	    		 
 	    	 
 	    	  }
@@ -155,10 +181,25 @@ private StringBuilder collecterPatient() {
 	
 	StringBuilder sb=new StringBuilder();
 	//On met la colonne de titre
-	sb.append("Name"+","+"ID"+","+"Date"+","+"Suv Max"+","+"TMTV"+","+"TLG"+","+"SUV Mean"+","+"SUV SD"+","+"SUV Peak"+","+"SUV qPeak"+","+"SUL Factor"+","+"Timer"+","+"Manual Roi Number"+","+"Automatic Roi number"+"\n");
+	sb.append("Name"+","+"ID"+","+"Date"+","+"Suv Max"+","+"TMTV"+","+"TLG"+","+"SUV Mean"+","+"SUV SD"+","+"SUV Peak"+","+"SUV qPeak"+","+"SUL Factor"+","+"Timer"+","+"Manual Roi Number"+","+"Automatic Roi number"+","+"SUV_Threshold"+","+"CT_Threshold"+"\n");
 	//On boucle les objet et on ajoute les lignes
 	for (int i=0; i<resultats.size(); i++) {
-		sb.append(resultats.get(i).getNom()+","+resultats.get(i).getId()+","+resultats.get(i).getDate()+","+String.valueOf(resultats.get(i).getSuvMax())+","+String.valueOf(resultats.get(i).getMtv())+","+String.valueOf(resultats.get(i).getTlg())+","+String.valueOf(resultats.get(i).getSuvMean())+","+String.valueOf(resultats.get(i).getSuvSD())+","+String.valueOf(resultats.get(i).getSuvPeak())+","+String.valueOf(resultats.get(i).getqPeak())+","+String.valueOf(resultats.get(i).getSul())+","+String.valueOf(resultats.get(i).getTimer())+","+String.valueOf(resultats.get(i).getManualRoiNumber())+","+String.valueOf(resultats.get(i).getNiftiRoiNumber())+"\n");
+		
+		String suvThreshold = null;
+		String ctThreshold=null;
+		
+		if(resultats.get(i).isUseSUV()) {
+			suvThreshold=resultats.get(i).getSUVlo()+"-"+resultats.get(i).getSUVhi();
+		}else {
+			suvThreshold="N/A";
+		}
+		if(resultats.get(i).isUseCT()) {
+			ctThreshold=resultats.get(i).getCTlo()+"-"+resultats.get(i).getCThi()+"-Option"+resultats.get(i).getCTRadio();
+		}else {
+			ctThreshold="N/A";
+		}
+		//Make the string for the CSV
+		sb.append(resultats.get(i).getNom()+","+resultats.get(i).getId()+","+resultats.get(i).getDate()+","+String.valueOf(resultats.get(i).getSuvMax())+","+String.valueOf(resultats.get(i).getMtv())+","+String.valueOf(resultats.get(i).getTlg())+","+String.valueOf(resultats.get(i).getSuvMean())+","+String.valueOf(resultats.get(i).getSuvSD())+","+String.valueOf(resultats.get(i).getSuvPeak())+","+String.valueOf(resultats.get(i).getqPeak())+","+String.valueOf(resultats.get(i).getSul())+","+String.valueOf(resultats.get(i).getTimer())+","+String.valueOf(resultats.get(i).getManualRoiNumber())+","+String.valueOf(resultats.get(i).getNiftiRoiNumber())+","+suvThreshold+","+ctThreshold+"\n");
 	}
 	return sb;
 }

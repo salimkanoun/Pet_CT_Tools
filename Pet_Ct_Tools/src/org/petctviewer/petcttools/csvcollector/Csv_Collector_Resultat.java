@@ -30,6 +30,9 @@ public class Csv_Collector_Resultat {
 	private double qPeak;
 	private int niftiRoiNumber, manualRoiNumber;
 	private int timer;
+	boolean useSUV, useCT;
+	private String SUVlo, SUVhi, CTlo, CThi;
+	private int ctRadio;
 	
 	public Csv_Collector_Resultat(String nom, String id, String date, double mtv, double tlg, double suvMean, double suvSD, double suvPeak, double suvMax, double sul, double qPeak,int timer, int niftiRoiNumber, int manualRoiNumber) {
 		this.nom=nom;
@@ -47,6 +50,33 @@ public class Csv_Collector_Resultat {
 		this.manualRoiNumber=manualRoiNumber;
 		this.timer=timer;
 		
+	}
+	
+	/**
+	 * Set the used threshold options
+	 * @param SUVlo
+	 * @param SUVhi
+	 * @param CTlo
+	 * @param CThi
+	 * @param useSUV
+	 * @param useCT
+	 * @param ctRadio
+	 */
+	public void setThresholdOptions(String SUVlo, String SUVhi, String CTlo, String CThi, Integer useSUV, Integer useCT, Integer ctRadio) {
+		
+		if(useSUV==1) {
+			this.useSUV=true;
+			this.SUVlo=SUVlo;
+			this.SUVhi=SUVhi;
+		}
+		
+		if(useCT==1) {
+			this.useCT=true;
+			this.CTlo=CTlo;
+			this.CThi=CThi;
+			this.ctRadio=ctRadio;
+			
+		}
 	}
 	
 	public String getNom() {
@@ -100,8 +130,36 @@ public class Csv_Collector_Resultat {
 	public double getqPeak(){
 		return this.qPeak;
 	}
+	
 	public int getTimer(){
 		return this.timer;
+	}
+	
+	public boolean isUseSUV() {
+		return this.useSUV;
+	}
+	
+	public boolean isUseCT() {
+		return this.useCT;
+	}
+	
+	public String getSUVlo() {
+		return this.SUVlo;
+	}
+	
+	public String getSUVhi() {
+		return this.SUVhi;
+	}
+	
+	public String getCTlo() {
+		return this.CTlo;
+	}
+	
+	public String getCThi() {
+		return this.CThi;
+	}
+	public int getCTRadio() {
+		return this.ctRadio;
 	}
 
 
