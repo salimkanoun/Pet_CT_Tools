@@ -12,8 +12,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-package org.petctviewer.petcttools.pyradiomics;
-
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 
@@ -86,7 +84,6 @@ public class OptionsRadiomics extends JDialog {
 	chckbxPrecropping,
 	chckbxSymetricalGlcm,
 	chckbxUseDistancesToNeighbour,
-	chckbxDiscretize,
 	chckbxGradient,
 	chckbxGradientSpacing;
 	
@@ -105,6 +102,8 @@ public class OptionsRadiomics extends JDialog {
 	
 	private File settingsFile=null;
 	protected boolean ok=false;
+	
+	private OptionsRadiomics gui; 
 
 	/**
 	 * Launch the application.
@@ -144,9 +143,9 @@ public class OptionsRadiomics extends JDialog {
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		buttonPane.add(panel_5);
 		
-		JButton btnTestPyradiomics = new JButton("Test pyRadiomics");
+		JButton btnTestPyradiomics = new JButton("pyRadiomics");
 		panel_5.add(btnTestPyradiomics);
-		
+
 		JButton btnSetSettingsFile = new JButton("Set Settings File");
 		panel_5.add(btnSetSettingsFile);
 		
@@ -188,11 +187,17 @@ public class OptionsRadiomics extends JDialog {
 				}
 			}
 		});
+		
 		btnTestPyradiomics.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Radiomics.testPyRadiomics();
+				Test_PyRadiomics testGui=new Test_PyRadiomics();
+				testGui.setModal(true);
+				testGui.pack();
+				testGui.setLocationRelativeTo(gui);
+				testGui.setVisible(true);
 			}
 		});
+		
 
 		JPanel Settings_Panel = new JPanel();
 		getContentPane().add(Settings_Panel, BorderLayout.CENTER);
@@ -274,15 +279,6 @@ public class OptionsRadiomics extends JDialog {
 			spinnerBinFixed.setModel(new SpinnerNumberModel(0, null, 1000, 1));
 			spinnerBinFixed.setEnabled(false);
 			panel_1.add(spinnerBinFixed);
-			
-			chckbxDiscretize = new JCheckBox("Discretize");
-			chckbxDiscretize.setSelected(true);
-			chckbxDiscretize.addChangeListener(new ChangeListener() {
-				public void stateChanged(ChangeEvent arg0) {
-					enableDiscretize(chckbxDiscretize.isSelected());
-				}
-			});
-			Discretization_Panel.add(chckbxDiscretize, BorderLayout.WEST);
 					
 			chckbxEnableFixedBin.addChangeListener(new ChangeListener() {
 				public void stateChanged (ChangeEvent e) {
@@ -859,6 +855,7 @@ public class OptionsRadiomics extends JDialog {
 			}
 			this.setSize(this.getPreferredSize());
 			}
+			this.gui=this;
 		
 		
 	}
@@ -903,22 +900,6 @@ public class OptionsRadiomics extends JDialog {
 			spinner_minRoiDimension.setEnabled(false);
 			spinner_minRoiSize.setEnabled(false);
 			chckbxCorrectMask.setEnabled(false);
-		}
-	}
-	
-	private void enableDiscretize(boolean discretize) {
-		if (discretize) {
-			chckbxFixedBinWidth.setEnabled(true);
-			chckbxResegmentation.setEnabled(true);
-			chckbxEnableFixedBin.setEnabled(true);
-			txtFixedBinWidth.setEnabled(true);
-			
-		}
-		else {
-			chckbxFixedBinWidth.setEnabled(false);
-			chckbxResegmentation.setEnabled(false);
-			chckbxEnableFixedBin.setEnabled(false);
-			
 		}
 	}
 	

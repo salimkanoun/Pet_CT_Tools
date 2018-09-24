@@ -12,7 +12,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  */
 
-package org.petctviewer.petcttools.pyradiomics;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
@@ -64,7 +63,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	/////Option Variables ////
 	private boolean optionSet=false;
 	//Discretization
-	private boolean discretize;
 	private boolean fixedbin;
 	private boolean useFixedBinPerRoi;
 	private Double binWidth;
@@ -329,30 +327,24 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 					for (int i=0; i<label.size();i++){
 						//Display info
 						lblStatusIdle.setText("Calculating ROI "+(i+1)+"/"+label.size());
-						//If fixed bin per ROI need to get min and max of each ROI
-						if (useFixedBinPerRoi && fileSettingsOption==null && optionSet && imageFile!=null &&maskFile!=null){
-							System.out.println(fixedBinPerRoi);
-							settings=radiomics.writeYaml(label.get(i), resegmentLimit, min, max);
-							JsonObject jsonTemp=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
-							double minRoi=jsonTemp.get("original_firstorder_Minimum").getAsDouble();
-							double maxRoi=jsonTemp.get("original_firstorder_Maximum").getAsDouble();
-							settings=radiomics.writeYaml(discretize, ((maxRoi-minRoi)/fixedBinPerRoi),validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour,  true, minRoi, maxRoi, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing, voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
-							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
-						}
+						
 						//Generate file settings if not defined in options
-						else if (!useFixedBinPerRoi && fileSettingsOption==null && optionSet && imageFile!=null && maskFile!=null)  {
-							settings=radiomics.writeYaml(discretize,binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
+						if ( fileSettingsOption==null && optionSet && imageFile!=null && maskFile!=null)  {
+							settings=radiomics.writeYaml(useFixedBinPerRoi, fixedBinPerRoi, binWidth,validateMask, this.minRoiDimension, this.minRoiSize, this.geometryTolerance, this.correctMask, label.get(i),normalize, this.normalizeScale, this.removeOutliners, resample, pixelSpacing, interpolator, padDistance, isForce2DExtraction, Dimension2D, isDistance, distanceNeighbour, resegmentLimit, min, max, preCroping, logSigma, waveletStart, waveletLevel, waveletString, useGradientSpacing,  voxelArrayShift, symetricalGLCM, matrixWeighting, alfa, imageType, featureSelection);
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
+						
 						//Use defined YAML file settings if defined in options
 						else if (fileSettingsOption!=null && imageFile!=null && maskFile!=null){
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), fileSettingsOption);
 						}
+						
 						//Settings by default if not set
 						else if(!optionSet && imageFile!=null && maskFile!=null) {
-							settings=radiomics.writeYaml(label.get(i));
+							settings=radiomics.writeDefaultYaml(label.get(i));
 							json=radiomics.sendPyRadiomics(imageFile.getAbsolutePath().toString(), maskFile.getAbsolutePath().toString(), settings);
 						}
+						
 						else if (imageFile==null || maskFile==null) {
 							JOptionPane.showMessageDialog(null,"Missing Image or Mask File");
 						}
@@ -384,7 +376,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		//Settings have been set once
 		jPrefer.putBoolean("optionSet", true);
 		//Add settings
-		jPrefer.putBoolean("discretize", discretize);
 		jPrefer.putBoolean("fixedbin", fixedbin);
 		jPrefer.putBoolean("resegmentPerRoi", useFixedBinPerRoi);
 		jPrefer.putDouble("binWidth", binWidth);
@@ -442,7 +433,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 		
 		optionSet=jPrefer.getBoolean("optionSet", false);
 		if (optionSet) {
-			discretize=jPrefer.getBoolean("discretize", false);
 			fixedbin=jPrefer.getBoolean("fixedbin", false);
 			useFixedBinPerRoi=jPrefer.getBoolean("resegmentPerRoi", false);
 			binWidth=jPrefer.getDouble("binWidth", 0);
@@ -507,7 +497,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	 * Load option data from panel option in this main class
 	 */
 	private void getOptions() {
-		discretize=option.chckbxDiscretize.isSelected();
 		fixedbin=option.chckbxEnableFixedBin.isSelected();
 		binWidth=option.getfixedBinWidth();
 		resegmentLimit=option.chckbxResegmentation.isSelected();
@@ -561,7 +550,6 @@ public class Radiomics_Frame extends JFrame implements PlugIn {
 	}
 	
 	private void setOptions() {
-		option.chckbxDiscretize.setSelected(discretize);
 		option.chckbxEnableFixedBin.setSelected(fixedbin);
 		option.setfixedBinWidth(binWidth);
 		option.chckbxResegmentation.setSelected(resegmentLimit);
