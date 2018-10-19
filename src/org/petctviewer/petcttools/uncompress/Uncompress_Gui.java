@@ -1,4 +1,4 @@
-package org.dcm4che3.tool.dcm2dcm;
+package org.petctviewer.petcttools.uncompress;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -6,6 +6,8 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
 
 import ij.plugin.PlugIn;
 
