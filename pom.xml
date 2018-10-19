@@ -5,6 +5,7 @@
 	<artifactId>pom-scijava</artifactId>
 	<version>19.2.0</version>
 	<relativePath/>
+    
   </parent>
   
   <properties>
@@ -65,6 +66,34 @@
 		<artifactId>commons-csv</artifactId>
 		<version>1.5</version>
 	</dependency>
+	
+	
+	 <dependency>
+      <groupId>org.dcm4che</groupId>
+      <artifactId>dcm4che-imageio</artifactId>
+      <version>5.14.1</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.dcm4che</groupId>
+      <artifactId>dcm4che-imageio-rle</artifactId>
+      <version>5.14.1</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.dcm4che</groupId>
+    	<artifactId>dcm4che-imageio-opencv</artifactId>
+    	<version>5.14.1</version>
+    	<scope>runtime</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.dcm4che.tool</groupId>
+      <artifactId>dcm4che-tool-common</artifactId>
+      <version>5.14.1</version>
+    </dependency>
+    
+    
 
   </dependencies>
 </project>
