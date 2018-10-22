@@ -120,15 +120,31 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		JButton btnUncompress = new JButton("Uncompress");
 		btnUncompress.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String[] args=new String[3];
-				args[0]="dcm2dcm";
-				args[1]=originalFiles.getAbsolutePath();
-				args[2]=destinationFile.getAbsolutePath();
-				Dcm2Dcm.main(args);
+				Dcm2Dcm decompressor=new Dcm2Dcm();
+				mtranscode(originalFiles,destinationFile,decompressor);
+
 			}
 		});
 		panel_1.add(btnUncompress);
 	}
+	
+	private void mtranscode(File src, File dest, Dcm2Dcm dcm) {
+        if (src.isDirectory()) {
+            dest.mkdir();
+            for (File file : src.listFiles())
+                mtranscode(file, new File(dest, file.getName()), dcm);
+            return;
+        }
+        if (dest.isDirectory())
+            dest = new File(dest, src.getName());
+        try {
+        	dcm.transcodeWithTranscoder(src, dest);
+
+            System.out.println( ("transcoded")+src+ dest);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
 
 	@Override
 	public void run(String arg0) {
