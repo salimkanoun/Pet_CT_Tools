@@ -123,7 +123,7 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		JButton btnUncompress = new JButton("Uncompress");
 		btnUncompress.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Dcm2Dcm.main(new String[] {originalFiles.getAbsolutePath().toString(), destinationFile.getAbsolutePath().toString()});
+				Dcm2Dcm.main(new String[] {"dcm2dcm", originalFiles.getAbsolutePath().toString(), destinationFile.getAbsolutePath().toString()});
 			
 			}
 		});
