@@ -8,6 +8,8 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ij.plugin.PlugIn;
 
@@ -26,6 +28,7 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 	/**
 	 * 
 	 */
+
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private File originalFiles, destinationFile;
@@ -120,31 +123,13 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		JButton btnUncompress = new JButton("Uncompress");
 		btnUncompress.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Dcm2Dcm decompressor=new Dcm2Dcm();
-				mtranscode(originalFiles,destinationFile,decompressor);
-
+				Dcm2Dcm.main(new String[] {originalFiles.getAbsolutePath().toString(), destinationFile.getAbsolutePath().toString()});
+			
 			}
 		});
 		panel_1.add(btnUncompress);
 	}
 	
-	private void mtranscode(File src, File dest, Dcm2Dcm dcm) {
-        if (src.isDirectory()) {
-            dest.mkdir();
-            for (File file : src.listFiles())
-                mtranscode(file, new File(dest, file.getName()), dcm);
-            return;
-        }
-        if (dest.isDirectory())
-            dest = new File(dest, src.getName());
-        try {
-        	dcm.transcodeWithTranscoder(src, dest);
-
-            System.out.println( ("transcoded")+src+ dest);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-    }
 
 	@Override
 	public void run(String arg0) {
