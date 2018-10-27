@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.dcm4che3.data.UID;
 import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +16,15 @@ import ij.plugin.PlugIn;
 
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.awt.event.ActionEvent;
 
 public class Uncompress_Gui extends JFrame implements PlugIn {
@@ -33,7 +37,8 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 	private JPanel contentPane;
 	private File originalFiles, destinationFile;
 	private JFrame gui=this;
-	private JLabel lbl_original_files, lbl_destinations_files;
+	private JLabel lbl_original_files, lbl_destinations_files, lblstatus;
+	private int counter;
 
 	/**
 	 * Launch the application.
@@ -76,7 +81,7 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 				if (ok==JFileChooser.APPROVE_OPTION ) {
 					originalFiles=originalFilesChooser.getSelectedFile().getAbsoluteFile();
 					lbl_original_files.setText(originalFilesChooser.getSelectedFile().toString());
-					
+					pack();
 					
 				}
 				
@@ -97,7 +102,7 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 				if (ok==JFileChooser.APPROVE_OPTION ) {
 					destinationFile=destinationFilesChooser.getSelectedFile().getAbsoluteFile();
 					lbl_destinations_files.setText(destinationFilesChooser.getSelectedFile().toString());
-					
+					pack();
 					
 				}
 			}
@@ -114,20 +119,49 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		lblDicomUncompressor.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_title.add(lblDicomUncompressor);
 		
-		JPanel panel_1 = new JPanel();
-		contentPane.add(panel_1, BorderLayout.SOUTH);
+		JPanel panel_south = new JPanel();
+		contentPane.add(panel_south, BorderLayout.SOUTH);
 		
 		JLabel lblPoweredByDcmche = new JLabel("Powered by DCM4CHE");
-		panel_1.add(lblPoweredByDcmche);
+		
+		lblstatus = new JLabel("Status : Idle");
+		
 		
 		JButton btnUncompress = new JButton("Uncompress");
 		btnUncompress.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Dcm2Dcm.main(new String[] {"dcm2dcm", originalFiles.getAbsolutePath().toString(), destinationFile.getAbsolutePath().toString()});
-			
+				counter=0;
+				Dcm2Dcm dcm2dcm=new Dcm2Dcm();
+				dcm2dcm.setTransferSyntax(UID.ImplicitVRLittleEndian);
+				
+				
+				SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+					
+					
+					protected Void doInBackground() throws Exception {
+						
+						mtranscode(originalFiles, destinationFile, dcm2dcm);
+						return null;
+						
+					}
+					
+					@Override
+					protected void done(){
+						lblstatus.setText("Done");
+						
+					}
+					
+								
+				};
+				
+				worker.execute();
+				
+				
 			}
 		});
-		panel_1.add(btnUncompress);
+		panel_south.add(lblPoweredByDcmche);
+		panel_south.add(btnUncompress);
+		panel_south.add(lblstatus);
 	}
 	
 
@@ -145,5 +179,25 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		});
 		
 	}
+	
+	private void mtranscode(File src, File dest, Dcm2Dcm dcm) {
+        if (src.isDirectory()) {
+            dest.mkdir();
+            for (File file : src.listFiles())
+                mtranscode(file, new File(dest, file.getName()), dcm);
+            return;
+        }
+        if (dest.isDirectory())
+            dest = new File(dest, src.getName());
+        try {
+            dcm.transcode(src, dest);
+            counter++;
+            System.out.println(("transcoded"+src+dest));
+            lblstatus.setText("Transcoded "+counter+" Files");
+        } catch (Exception e) {
+            System.out.println(("failed"+src+e.getMessage()));
+            e.printStackTrace(System.out);
+        }
+    }
 
 }
