@@ -2,30 +2,27 @@ package org.petctviewer.petcttools.uncompress;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
-import org.dcm4che3.data.UID;
-import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ij.plugin.PlugIn;
-
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.SwingWorker;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
-import java.awt.event.ActionEvent;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingWorker;
+import javax.swing.border.EmptyBorder;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.dcm4che3.data.UID;
+import org.dcm4che3.io.DicomInputStream;
+import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
+
+import ij.plugin.PlugIn;
 
 public class Uncompress_Gui extends JFrame implements PlugIn {
 
@@ -159,8 +156,70 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 				
 			}
 		});
+		
+		JButton btnlistCompressed = new JButton("List Compressed");
+		btnlistCompressed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				counter=0;
+				
+				
+				
+				SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+					
+					protected Void doInBackground() throws Exception {
+						
+						 if (originalFiles.isDirectory()) {
+					           this.getTs(originalFiles);
+					        }
+						return null;
+						
+					}
+					
+					private void getTs(File originalFiles) throws IOException {
+						
+						File[] directories = originalFiles.listFiles(File::isDirectory);
+						System.out.println("folder"+originalFiles.toString());
+						
+						if(ArrayUtils.isEmpty(directories)) {
+							File[] files=originalFiles.listFiles();
+							DicomInputStream dis=new DicomInputStream(files[0]);
+							String ts=dis.getTransferSyntax();
+							dis.close();
+							
+							if(ts.contains("1.2.840.10008.1.2.4") || ts.contains("1.2.840.10008.1.2.5") || ts.contains("1.2.840.10008.1.2.6")) {
+								System.out.println("foundCompressed"+ts);
+								System.out.println(originalFiles);
+							}
+							
+							
+						}else {
+							for (int i=0; i<directories.length; i++) {
+								this.getTs(directories[i]);		
+							}	
+						}
+
+					}
+						
+					
+					
+					@Override
+					protected void done(){
+						lblstatus.setText("Done");
+						
+					}
+					
+								
+				};
+				
+				worker.execute();
+				
+				
+			}
+		});
 		panel_south.add(lblPoweredByDcmche);
 		panel_south.add(btnUncompress);
+		panel_south.add(btnlistCompressed);
+		
 		panel_south.add(lblstatus);
 	}
 	
