@@ -7,6 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -160,16 +162,17 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		JButton btnlistCompressed = new JButton("List Compressed");
 		btnlistCompressed.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				counter=0;
-				
-				
-				
+
 				SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
-					
+					List<File> compressedDicoms=new ArrayList<File>();
 					protected Void doInBackground() throws Exception {
 						
 						 if (originalFiles.isDirectory()) {
 					           this.getTs(originalFiles);
+					           for (int i=0; i<compressedDicoms.size(); i++) {
+					        	   System.out.println(compressedDicoms.get(i));
+					           }
+					           
 					        }
 						return null;
 						
@@ -178,23 +181,28 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 					private void getTs(File originalFiles) throws IOException {
 						
 						File[] directories = originalFiles.listFiles(File::isDirectory);
-						System.out.println("folder"+originalFiles.toString());
 						
-						if(ArrayUtils.isEmpty(directories)) {
+						if(ArrayUtils.isEmpty(directories) ) {
+							if(originalFiles.listFiles().length ==0) return;
 							File[] files=originalFiles.listFiles();
-							DicomInputStream dis=new DicomInputStream(files[0]);
-							String ts=dis.getTransferSyntax();
-							dis.close();
+							String ts=null;
+							try {
+								DicomInputStream dis=new DicomInputStream(files[0]);
+								dis.readFileMetaInformation();
+								ts=dis.getTransferSyntax();
+								dis.close();
+							}catch(Exception e) {
+								e.printStackTrace();
+							}
 							
 							if(ts.contains("1.2.840.10008.1.2.4") || ts.contains("1.2.840.10008.1.2.5") || ts.contains("1.2.840.10008.1.2.6")) {
-								System.out.println("foundCompressed"+ts);
-								System.out.println(originalFiles);
+								compressedDicoms.add(originalFiles);
 							}
 							
 							
 						}else {
 							for (int i=0; i<directories.length; i++) {
-								this.getTs(directories[i]);		
+								getTs(directories[i]);		
 							}	
 						}
 
