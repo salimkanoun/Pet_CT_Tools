@@ -20,11 +20,12 @@ import javax.swing.SwingWorker;
 import javax.swing.border.EmptyBorder;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.dcm4che3.data.UID;
 import org.dcm4che3.io.DicomInputStream;
 import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
 
 import ij.plugin.PlugIn;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 public class Uncompress_Gui extends JFrame implements PlugIn {
 
@@ -37,7 +38,8 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 	private File originalFiles, destinationFile;
 	private JFrame gui=this;
 	private JLabel lbl_original_files, lbl_destinations_files, lblstatus;
-	private int counter;
+	private int counterTranscoded;
+	private int counterAllFiles;
 
 	/**
 	 * Launch the application.
@@ -125,110 +127,83 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		
 		lblstatus = new JLabel("Status : Idle");
 		
-		
-		JButton btnUncompress = new JButton("Uncompress");
-		btnUncompress.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				counter=0;
-				Dcm2Dcm dcm2dcm=new Dcm2Dcm();
-				dcm2dcm.setTransferSyntax(UID.ImplicitVRLittleEndian);
-				
-				
-				SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
-					
-					
-					protected Void doInBackground() throws Exception {
-						
-						mtranscode(originalFiles, destinationFile, dcm2dcm);
-						return null;
-						
-					}
-					
-					@Override
-					protected void done(){
-						lblstatus.setText("Done");
-						
-					}
-					
-								
-				};
-				
-				worker.execute();
-				
-				
-			}
-		});
-		
-		JButton btnlistCompressed = new JButton("List Compressed");
-		btnlistCompressed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
-					List<File> compressedDicoms=new ArrayList<File>();
-					protected Void doInBackground() throws Exception {
-						
-						 if (originalFiles.isDirectory()) {
-					           this.getTs(originalFiles);
-					           for (int i=0; i<compressedDicoms.size(); i++) {
-					        	   System.out.println(compressedDicoms.get(i));
-					           }
-					           
-					        }
-						return null;
-						
-					}
-					
-					private void getTs(File originalFiles) throws IOException {
-						
-						File[] directories = originalFiles.listFiles(File::isDirectory);
-						
-						if(ArrayUtils.isEmpty(directories) ) {
-							if(originalFiles.listFiles().length ==0) return;
-							File[] files=originalFiles.listFiles();
-							String ts=null;
-							try {
-								DicomInputStream dis=new DicomInputStream(files[0]);
-								dis.readFileMetaInformation();
-								ts=dis.getTransferSyntax();
-								dis.close();
-							}catch(Exception e) {
-								e.printStackTrace();
-							}
-							
-							if(ts.contains("1.2.840.10008.1.2.4") || ts.contains("1.2.840.10008.1.2.5") || ts.contains("1.2.840.10008.1.2.6")) {
-								compressedDicoms.add(originalFiles);
-							}
-							
-							
-						}else {
-							for (int i=0; i<directories.length; i++) {
-								getTs(directories[i]);		
-							}	
-						}
-
-					}
-						
-					
-					
-					@Override
-					protected void done(){
-						lblstatus.setText("Done");
-						
-					}
-					
-								
-				};
-				
-				worker.execute();
-				
-				
-			}
-		});
 		panel_south.add(lblPoweredByDcmche);
-		panel_south.add(btnUncompress);
-		panel_south.add(btnlistCompressed);
 		
+		JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"Uncompress all", "Uncompress only compressed", "List Compressed (CSV)"}));
+		panel_south.add(comboBox);
+		
+		
+		JButton btnStart = new JButton("Start");
+		
+		btnStart.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				counterTranscoded=0;
+				counterAllFiles=0;
+				Dcm2Dcm dcm2dcm=new Dcm2Dcm();
+				
+				if(comboBox.getSelectedIndex()==0) {
+					SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+						
+						
+						protected Void doInBackground() throws Exception {
+							
+							mtranscode(originalFiles, destinationFile, dcm2dcm, false);
+							return null;
+							
+						}
+						
+						@Override
+						protected void done(){
+							lblstatus.setText("Done");
+							
+						}
+						
+									
+					};
+					
+					worker.execute();
+					
+					
+					
+				}else if(comboBox.getSelectedIndex()==1) {
+					SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+						
+						
+						protected Void doInBackground() throws Exception {
+							
+							mtranscode(originalFiles, destinationFile, dcm2dcm, true);
+							return null;
+							
+						}
+						
+						@Override
+						protected void done(){
+							lblstatus.setText("Done");
+							
+						}
+						
+									
+					};
+					
+					worker.execute();
+					
+				}else if(comboBox.getSelectedIndex()==2) {
+					listCompressed();
+					
+				}
+				
+			}
+			
+		});
+		
+		
+		panel_south.add(btnStart);
 		panel_south.add(lblstatus);
+		
+		pack();
 	}
 	
 
@@ -247,24 +222,107 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 		
 	}
 	
-	private void mtranscode(File src, File dest, Dcm2Dcm dcm) {
+	private void mtranscode(File src, File dest, Dcm2Dcm dcm, boolean onlycompressed) {
         if (src.isDirectory()) {
             dest.mkdir();
             for (File file : src.listFiles())
-                mtranscode(file, new File(dest, file.getName()), dcm);
+                mtranscode(file, new File(dest, file.getName()), dcm, onlycompressed);
             return;
         }
-        if (dest.isDirectory())
-            dest = new File(dest, src.getName());
+        if (dest.isDirectory()) dest = new File(dest, src.getName());
+        counterAllFiles++;
         try {
-            dcm.transcode(src, dest);
-            counter++;
-            System.out.println(("transcoded"+src+dest));
-            lblstatus.setText("Transcoded "+counter+" Files");
+        	if(onlycompressed) {
+        		if (isCompressedDicom(src)){
+        			dcm.transcode(src, dest);
+        			 counterTranscoded++;
+        		}
+        	}else {
+        		dcm.transcode(src, dest);
+        		counterTranscoded++;
+        	}
+        	
+            lblstatus.setText("Transcoded "+counterTranscoded+"/"+counterAllFiles+" Files");
         } catch (Exception e) {
             System.out.println(("failed"+src+e.getMessage()));
-            e.printStackTrace(System.out);
         }
     }
+	
+	private void listCompressed() {
+		SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
+			List<File> compressedDicoms=new ArrayList<File>();
+			protected Void doInBackground() throws Exception {
+				
+				 if (originalFiles.isDirectory()) {
+			           this.getTs(originalFiles);
+			           StringBuilder csv=new StringBuilder();
+			           csv.append("CompressedSeries, Parent Folder"+"\n");
+			           for (int i=0; i<compressedDicoms.size(); i++) {
+			        	   csv.append(compressedDicoms.get(i)+","+compressedDicoms.get(i).getParent()+"\n");
+			           }
+			           JFileChooser chooser=new JFileChooser();
+			           chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			           int validation=chooser.showSaveDialog(gui);
+			           if(validation==JFileChooser.APPROVE_OPTION) {
+			        	   System.out.println(csv);
+			           }
+			           
+			        }
+				return null;
+				
+			}
+			
+			private void getTs(File originalFiles) throws IOException {
+				
+				File[] directories = originalFiles.listFiles(File::isDirectory);
+				
+				if(ArrayUtils.isEmpty(directories) ) {
+					if(originalFiles.listFiles().length ==0) return;
+					File[] files=originalFiles.listFiles();
+					boolean compressed=isCompressedDicom(files[0]);
+					if(compressed) {
+						compressedDicoms.add(originalFiles);
+					}
+					
+					
+				}else {
+					for (int i=0; i<directories.length; i++) {
+						getTs(directories[i]);		
+					}	
+				}
+
+			}
+				
+			
+			
+			@Override
+			protected void done(){
+				lblstatus.setText("Done");
+				
+			}
+			
+						
+		};
+		
+		worker.execute();
+	}
+	
+	private boolean isCompressedDicom(File file) {
+		String ts=null;
+		try {
+			DicomInputStream dis=new DicomInputStream(file);
+			dis.readFileMetaInformation();
+			ts=dis.getTransferSyntax();
+			dis.close();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		if(ts.contains("1.2.840.10008.1.2.4") || ts.contains("1.2.840.10008.1.2.5") || ts.contains("1.2.840.10008.1.2.6")) {
+			return true;
+		}else {
+			return false;
+		}
+	}
 
 }
