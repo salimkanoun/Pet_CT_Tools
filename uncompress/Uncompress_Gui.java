@@ -22,9 +22,7 @@ import org.dcm4che3.data.UID;
 import org.dcm4che3.io.DicomInputStream;
 import org.dcm4che3.tool.dcm2dcm.Dcm2Dcm;
 
-import ij.plugin.PlugIn;
-
-public class Uncompress_Gui extends JFrame implements PlugIn {
+public class Uncompress_Gui extends JFrame {
 
 	/**
 	 * 
@@ -224,8 +222,7 @@ public class Uncompress_Gui extends JFrame implements PlugIn {
 	}
 	
 
-	@Override
-	public void run(String arg0) {
+	public static void run(String[] arg0) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
