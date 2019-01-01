@@ -5,6 +5,7 @@
 	<artifactId>pom-scijava</artifactId>
 	<version>19.2.0</version>
 	<relativePath/>
+
   </parent>
   
   <properties>
@@ -63,10 +64,38 @@
 		<artifactId>commons-csv</artifactId>
 		<version>1.5</version>
 	</dependency>
-
-
+	
+	<dependency>
+	    <groupId>ome</groupId>
+	    <artifactId>formats-gpl</artifactId>
+    </dependency>
     
+    <dependency>
+	    <groupId>ome</groupId>
+	    <artifactId>formats-api</artifactId>
+	    </dependency>
+	
+	<dependency>
+	    <groupId>ome</groupId>
+	    <artifactId>formats-bsd</artifactId>
+	    </dependency>
+    <dependency>
     
+    <groupId>org.openmicroscopy</groupId>
+    <artifactId>ome-common</artifactId>
+	</dependency>
+	
+	<dependency>
+	    <groupId>org.openmicroscopy</groupId>
+	    <artifactId>ome-xml</artifactId>
+	</dependency>
+	
+	<dependency>
+	    <groupId>loci</groupId>
+	    <artifactId>loci_plugins</artifactId>
+	    <version>4.4.9</version>
+	</dependency>
+	
 
   </dependencies>
 </project>
