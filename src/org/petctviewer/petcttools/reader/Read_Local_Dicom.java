@@ -1,12 +1,9 @@
 package org.petctviewer.petcttools.reader;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 
 import ij.ImagePlus;
 import ij.io.Opener;
-import loci.formats.FormatException;
 import loci.plugins.BF;
 
 public class Read_Local_Dicom {
