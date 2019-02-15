@@ -1,5 +1,6 @@
 package org.petctviewer.petcttools.reader;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,9 +25,10 @@ public class Series_Details {
 	String modality;
 	String sopClassUID;
 	String imageType;
+	File fileLocation;
 	
 	public Series_Details(String transferSyntax, String patientName, String patientId, String studyUID, String studyDescription,
-			String studyDate, String serieDescription, String serieNumber, String modality, int numberOfImage, String sopClassUID) {
+			String studyDate, String serieDescription, String serieNumber, String modality, int numberOfImage, String sopClassUID, File fileLocation) {
 		
 		//Parse dicomDate String and put 01-01-1900 if unparseable
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
@@ -50,6 +52,7 @@ public class Series_Details {
 		this.numberOfImage=numberOfImage;
 		this.modality=modality;
 		this.sopClassUID=sopClassUID;
+		this.fileLocation=fileLocation;
 		
 		determineImageType();
 		determineIsCompressed();
