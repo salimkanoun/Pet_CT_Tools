@@ -11,6 +11,10 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.JTabbedPane;
 
 public class Reader_Gui extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private JTable table;
 	public Reader_Gui() {
 		

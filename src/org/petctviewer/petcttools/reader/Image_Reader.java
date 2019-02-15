@@ -101,9 +101,9 @@ public class Image_Reader {
 		for(int i=1; i<=imp.getImageStackSize(); i++) {
 			
 			try {
-			imp.setSlice(i);
-			String imageNumber=DicomTools.getTag(imp, "0020,0013").trim();
-			sliceMap.put(Integer.parseInt(imageNumber), i);	
+				imp.setSlice(i);
+				String imageNumber=DicomTools.getTag(imp, "0020,0013").trim();
+				sliceMap.put(Integer.parseInt(imageNumber), i);	
 			
 			}catch(Exception e1){
 				//If parse error of slice number return the original stack
