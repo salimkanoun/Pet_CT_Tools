@@ -2,7 +2,16 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import org.dcm4che3.data.Attributes;
+import org.dcm4che3.data.Tag;
+import org.dcm4che3.io.BulkDataDescriptor;
+import org.dcm4che3.io.DicomInputStream;
+import org.dcm4che3.io.DicomInputStream.IncludeBulkData;
+
+import com.google.gson.stream.JsonWriter;
 
 import ij.ImagePlus;
 
@@ -40,7 +49,49 @@ public class Read_Local_Dicom {
 
 		if(directories.length==0 
 				&& files.length>0) {
+			
+			try {
+				
 
+				DicomInputStream dis=new DicomInputStream(files[0]);
+				 
+			   String blkFilePrefix = "blk";
+			   IncludeBulkData includeBulkData = IncludeBulkData.URI;
+				
+				dis.setIncludeBulkData(includeBulkData);
+		        //dis.setBulkDataDescriptor(bulkDataDescriptor);
+		       // dis.setBulkDataDirectory(blkDirectory);
+		        //dis.setBulkDataFilePrefix(blkFilePrefix);
+		        //dis.setBulkDataFileSuffix(blkFileSuffix);
+		       // dis.setConcatenateBulkDataFiles(catBlkFiles);
+				
+
+				 //JsonWriter jsonWriter = new JSONWriter(jsonGen);
+				
+				dis.readDataset(-1, -1);
+
+				 //dis.setDicomInputHandler(jsonWriter);
+				//Attributes meta2=dis.readItem();
+				//dis.readHeader();
+				//dis.get
+				
+				Attributes meta=dis.getFileMetaInformation();
+				
+				String patientName=meta.getString(Tag.MediaStorageSOPClassUID);
+				
+				System.out.println(patientName);
+				
+				dis.close();
+				System.out.println(meta);
+
+				
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			//DicomFormat dcm = new DicomFormat();
 			//Add found folder in the arrayList of folder that can be opened
 			folderList.add(files[0].getParentFile());
 			
