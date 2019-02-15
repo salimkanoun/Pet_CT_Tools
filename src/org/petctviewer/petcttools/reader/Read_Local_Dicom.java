@@ -67,8 +67,10 @@ public class Read_Local_Dicom {
 				
 
 				 //JsonWriter jsonWriter = new JSONWriter(jsonGen);
-				
+				//DisplayTag.loadDicomObject(File f);
 				dis.readDataset(-1, -1);
+				
+				//SK CHERCHER DICOM OUTPUT STREAM ?
 
 				 //dis.setDicomInputHandler(jsonWriter);
 				//Attributes meta2=dis.readItem();
