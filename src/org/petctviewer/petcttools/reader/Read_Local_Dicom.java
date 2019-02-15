@@ -7,11 +7,8 @@ import java.util.ArrayList;
 
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
-import org.dcm4che3.io.BulkDataDescriptor;
 import org.dcm4che3.io.DicomInputStream;
 import org.dcm4che3.io.DicomInputStream.IncludeBulkData;
-
-import com.google.gson.stream.JsonWriter;
 
 import ij.ImagePlus;
 
@@ -23,7 +20,8 @@ public class Read_Local_Dicom {
 		Read_Local_Dicom read = new Read_Local_Dicom();
 		//read.readFile(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
 		//read.readFileBioFormat(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
-		read.recursiveScanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0"));
+		//read.recursiveScanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0"));
+		read.recursiveScanFolder(new File("/home/salim/Bureau/EsportatiHoros/Widendemo_Fiji_Hd170/Widendemo_Fiji_Hd170_Baselinepet_TomoscintGlobale_Corporea_(Pet - Fiji_hd170_0"));
 		read.openAllFolders();
 	}
 	
@@ -54,21 +52,8 @@ public class Read_Local_Dicom {
 				
 
 				DicomInputStream dis=new DicomInputStream(files[0]);
-				 
-			   String blkFilePrefix = "blk";
-			   IncludeBulkData includeBulkData = IncludeBulkData.URI;
 				
-				dis.setIncludeBulkData(includeBulkData);
-		        //dis.setBulkDataDescriptor(bulkDataDescriptor);
-		       // dis.setBulkDataDirectory(blkDirectory);
-		        //dis.setBulkDataFilePrefix(blkFilePrefix);
-		        //dis.setBulkDataFileSuffix(blkFileSuffix);
-		       // dis.setConcatenateBulkDataFiles(catBlkFiles);
-				
-
-				 //JsonWriter jsonWriter = new JSONWriter(jsonGen);
-				//DisplayTag.loadDicomObject(File f);
-				dis.readDataset(-1, -1);
+				Attributes meta2=dis.readDataset(-1, -1);
 				
 				//SK CHERCHER DICOM OUTPUT STREAM ?
 
@@ -77,14 +62,13 @@ public class Read_Local_Dicom {
 				//dis.readHeader();
 				//dis.get
 				
-				Attributes meta=dis.getFileMetaInformation();
-				
-				String patientName=meta.getString(Tag.MediaStorageSOPClassUID);
+			
+				String patientName=meta2.getString(Tag.PatientName);
 				
 				System.out.println(patientName);
 				
 				dis.close();
-				System.out.println(meta);
+				System.out.println(meta2);
 
 				
 				
