@@ -21,7 +21,7 @@ public class Series_Details {
 	String studyDescription;
 	Date studyDate;
 	String serieDescription;
-	String serieNumber;
+	String serieNumber="N/A";
 	int numberOfImage;
 	String modality;
 	String sopClassUID;
@@ -66,13 +66,17 @@ public class Series_Details {
 		}
 		
 		this.transferSyntax= transferSyntax;
+		
 		this.patientName=patientName;
 		this.patientId=patientId;
 		this.studyUID=studyUID;
 		this.studyDescription=studyDescription;
 		this.studyDate=studyDateParsed;
 		this.serieDescription=serieDescription;
-		this.serieNumber=serieNumber;
+		if(serieNumber!=null) {
+			this.serieNumber=serieNumber;
+		}
+		
 		
 		this.modality=modality;
 		this.sopClassUID=sopClassUID;

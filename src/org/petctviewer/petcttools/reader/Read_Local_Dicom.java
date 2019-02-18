@@ -16,33 +16,31 @@ public class Read_Local_Dicom {
 	
 	ArrayList<File> folderList;
 	HashMap<File, Series_Details> dicomMap;
+	File folderToRead;
 
 	public static void main(String[] args) {
 		Read_Local_Dicom read = new Read_Local_Dicom();
 		//read.readFile(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
 		//read.readFileBioFormat(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
-		read.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001"));
-		//read.recursiveScanFolder(new File("/home/salim/Bureau/EsportatiHoros/Widendemo_Fiji_Hd170/Widendemo_Fiji_Hd170_Baselinepet_TomoscintGlobale_Corporea_(Pet - Fiji_hd170_0"));
+		//read.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001"));
+		read.scanFolder(new File("/home/salim/Bureau/EsportatiHoros/"));
 		//read.openAllFolders();
 		
 		Reader_Gui gui=new Reader_Gui();
-		gui.updateSerieTable(read.dicomMap);
+		gui.setHashMap(read.dicomMap);
 		gui.pack();
 		gui.setVisible(true);
 	}
 	
-
-	public void scanFolder(File folder) {
+	public void scanFolder(File folderToRead) {
+		this.folderToRead=folderToRead;
 		folderList=new ArrayList<File>();
 		dicomMap=new HashMap<File, Series_Details>();
-		recursiveScanFolder(folder);
-		
+		recursiveScanFolder(folderToRead);
 		
 	}
 	
 	private void recursiveScanFolder(File folder) {
-		
-		
 
 		String[] directories = folder.list(new FilenameFilter() {
 			  @Override
@@ -53,7 +51,7 @@ public class Read_Local_Dicom {
 		
 		File[] files = folder.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
-		        return (name.toLowerCase().endsWith(".dcm") || !name.contains(".") );
+		        return (name.toLowerCase().endsWith(".dcm") ||name.toLowerCase().endsWith(".img") || !name.contains(".") );
 		    }
 		});
 		
@@ -89,7 +87,8 @@ public class Read_Local_Dicom {
 						studyDate, serieDescription, serieNumber, modality, numberOfImage, sopClassUID, files[0].getParentFile());
 				
 				
-				dicomMap.put(files[0].getParentFile(), details);
+				dicomMap.put(files[0].getParentFile(), 
+						details);
 				
 
 
@@ -106,14 +105,13 @@ public class Read_Local_Dicom {
 		
 	}
 	
-	private void openAllFolders() {
+	private void openFolders(File folder) {
 		
-		for (File folder : folderList) {
-			Image_Reader reader=new Image_Reader(folder);
-			ImagePlus image=reader.getImagePlus();
-			image.show();
+		Image_Reader reader=new Image_Reader(folder);
+		ImagePlus image=reader.getImagePlus();
+		image.show();
 			
-		}
+		
 	}
 	
 	
