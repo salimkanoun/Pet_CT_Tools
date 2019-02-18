@@ -26,8 +26,13 @@ public class Table_Series_Model extends DefaultTableModel{
 	
 	public Class<?> getColumnClass(int column){
 		return columnClass[column];
-		
 	}
+	
+	public boolean isCellEditable(int row,int column){
+		return false;	
+	}
+	
+	
 	
 	private void updateModel() {
 		for(Series_Details serie: series) {

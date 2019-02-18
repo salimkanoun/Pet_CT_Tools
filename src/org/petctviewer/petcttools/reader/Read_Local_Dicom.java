@@ -26,7 +26,7 @@ public class Read_Local_Dicom {
 		read.scanFolder(new File("/home/salim/Bureau/EsportatiHoros/"));
 		//read.openAllFolders();
 		
-		Reader_Gui gui=new Reader_Gui();
+		Reader_Gui gui=new Reader_Gui(read);
 		gui.setHashMap(read.dicomMap);
 		gui.pack();
 		gui.setVisible(true);
@@ -79,7 +79,8 @@ public class Read_Local_Dicom {
 				String serieDescription=meta2.getString(Tag.SeriesDescription);
 				String serieNumber=meta2.getString(Tag.SeriesNumber);
 				String accessionNumber=meta2.getString(Tag.AccessionNumber);
-				String numberOfImage=meta2.getString(Tag.NumberOfFrames);
+				String numberOfImage=meta2.getString(Tag.NumberOfSlices);
+				System.out.println(numberOfImage);
 				String modality=meta2.getString(Tag.Modality);
 				String sopClassUID=meta2.getString(Tag.SOPClassUID);
 				
@@ -105,11 +106,15 @@ public class Read_Local_Dicom {
 		
 	}
 	
-	private void openFolders(File folder) {
+	public void openFolders(ArrayList<File> folders) {
 		
-		Image_Reader reader=new Image_Reader(folder);
-		ImagePlus image=reader.getImagePlus();
-		image.show();
+		for(File folder: folders) {
+			Image_Reader reader=new Image_Reader(folder);
+			ImagePlus image=reader.getImagePlus();
+			image.show();
+			
+		}
+		
 			
 		
 	}

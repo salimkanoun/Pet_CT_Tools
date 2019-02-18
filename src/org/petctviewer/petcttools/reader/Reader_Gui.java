@@ -16,6 +16,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JLabel;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
 public class Reader_Gui extends JFrame {
@@ -23,11 +25,14 @@ public class Reader_Gui extends JFrame {
 	private JTable tableSeries;
 	private JTable tableStudy;
 	
+	private Read_Local_Dicom dicomReader;
+	
 	private Table_Study_Model modelStudy;
 	
 	
-	public Reader_Gui() {
+	public Reader_Gui(Read_Local_Dicom dicomReader) {
 		super("Read Local Dicoms");
+		this.dicomReader=dicomReader;
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		getContentPane().add(tabbedPane, BorderLayout.NORTH);
 		
@@ -64,6 +69,8 @@ public class Reader_Gui extends JFrame {
 		tableStudy.getColumnModel().getColumn(6).setMinWidth(0);
 		tableStudy.getColumnModel().getColumn(6).setMaxWidth(0);
 		
+		tableStudy.setAutoCreateRowSorter(true);
+		
 		JScrollPane scrollPane_serie = new JScrollPane();
 		panel_center.add(scrollPane_serie);
 		
@@ -75,6 +82,22 @@ public class Reader_Gui extends JFrame {
 		panel.add(panel_east, BorderLayout.EAST);
 		
 		JButton btnRead = new JButton("Read");
+		btnRead.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				//SK SWING WORKER ICI
+				if(tableSeries.getSelectedRowCount()!=0) {
+					ArrayList<File> folders=new ArrayList<File>();
+					int[] rows=tableSeries.getSelectedRows();
+					for(int row : rows) {
+						folders.add((File) tableSeries.getValueAt(row, 4));
+					}
+					dicomReader.openFolders(folders);
+					
+				}
+				
+				
+			}
+		});
 		panel_east.add(btnRead);
 		
 		JPanel panel_setup = new JPanel();
@@ -91,15 +114,20 @@ public class Reader_Gui extends JFrame {
 			@Override
 	        public void valueChanged(ListSelectionEvent event) {
 				
-				@SuppressWarnings("unchecked")
-				ArrayList<Series_Details> series=(ArrayList<Series_Details>) tableStudy.getValueAt(tableStudy.getSelectedRow(), 6);
 				
-				tableSeries.setModel(new Table_Series_Model(series));
+				if(tableStudy.getSelectedRowCount()!=0) {
+					@SuppressWarnings("unchecked")
+					ArrayList<Series_Details> series=(ArrayList<Series_Details>) tableStudy.getValueAt(tableStudy.getSelectedRow(), 6);
+					
+					tableSeries.setModel(new Table_Series_Model(series));
+					
+					tableSeries.getColumnModel().getColumn(4).setMinWidth(0);
+					tableSeries.getColumnModel().getColumn(4).setMaxWidth(0);
+					tableSeries.getColumnModel().getColumn(5).setMinWidth(0);
+					tableSeries.getColumnModel().getColumn(5).setMaxWidth(0);
+					
+				}
 				
-				tableSeries.getColumnModel().getColumn(4).setMinWidth(0);
-				tableSeries.getColumnModel().getColumn(4).setMaxWidth(0);
-				tableSeries.getColumnModel().getColumn(5).setMinWidth(0);
-				tableSeries.getColumnModel().getColumn(5).setMaxWidth(0);
 				
 	        }
 
