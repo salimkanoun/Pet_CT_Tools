@@ -16,6 +16,7 @@ public class Series_Details {
 	boolean isCompressed;
 	String patientName;
 	String patientId;
+	String accessionNumber;
 	String studyUID;
 	String studyDescription;
 	Date studyDate;
@@ -27,8 +28,24 @@ public class Series_Details {
 	String imageType;
 	File fileLocation;
 	
-	public Series_Details(String transferSyntax, String patientName, String patientId, String studyUID, String studyDescription,
-			String studyDate, String serieDescription, String serieNumber, String modality, int numberOfImage, String sopClassUID, File fileLocation) {
+	/**
+	 * 
+	 * @param transferSyntax
+	 * @param patientName
+	 * @param patientId
+	 * @param accessionNumber
+	 * @param studyUID
+	 * @param studyDescription
+	 * @param studyDate
+	 * @param serieDescription
+	 * @param serieNumber
+	 * @param modality
+	 * @param numberOfImage
+	 * @param sopClassUID
+	 * @param fileLocation
+	 */
+	public Series_Details(String transferSyntax, String patientName, String patientId, String accessionNumber, String studyUID, String studyDescription,
+			String studyDate, String serieDescription, String serieNumber, String modality, String numberOfImage, String sopClassUID, File fileLocation) {
 		
 		//Parse dicomDate String and put 01-01-1900 if unparseable
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
@@ -37,8 +54,15 @@ public class Series_Details {
 		try {
 			defaultDate = format.parse("19000101");
 			studyDateParsed=format.parse(studyDate);
+			
 		} catch (ParseException e) {
 			studyDateParsed=defaultDate;
+		}
+		
+		try {
+			this.numberOfImage=Integer.parseInt(numberOfImage);
+		}catch (Exception e) {
+			this.numberOfImage=0;
 		}
 		
 		this.transferSyntax= transferSyntax;
@@ -49,10 +73,11 @@ public class Series_Details {
 		this.studyDate=studyDateParsed;
 		this.serieDescription=serieDescription;
 		this.serieNumber=serieNumber;
-		this.numberOfImage=numberOfImage;
+		
 		this.modality=modality;
 		this.sopClassUID=sopClassUID;
 		this.fileLocation=fileLocation;
+		this.accessionNumber=accessionNumber;
 		
 		determineImageType();
 		determineIsCompressed();
