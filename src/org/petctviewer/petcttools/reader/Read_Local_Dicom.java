@@ -21,17 +21,28 @@ public class Read_Local_Dicom {
 		Read_Local_Dicom read = new Read_Local_Dicom();
 		//read.readFile(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
 		//read.readFileBioFormat(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
-		read.recursiveScanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0"));
+		read.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001"));
 		//read.recursiveScanFolder(new File("/home/salim/Bureau/EsportatiHoros/Widendemo_Fiji_Hd170/Widendemo_Fiji_Hd170_Baselinepet_TomoscintGlobale_Corporea_(Pet - Fiji_hd170_0"));
-		read.openAllFolders();
+		//read.openAllFolders();
+		
+		Reader_Gui gui=new Reader_Gui();
+		gui.updateSerieTable(read.dicomMap);
+		gui.pack();
+		gui.setVisible(true);
 	}
 	
 
-	
-	public void recursiveScanFolder(File folder) {
-		
+	public void scanFolder(File folder) {
 		folderList=new ArrayList<File>();
 		dicomMap=new HashMap<File, Series_Details>();
+		recursiveScanFolder(folder);
+		
+		
+	}
+	
+	private void recursiveScanFolder(File folder) {
+		
+		
 
 		String[] directories = folder.list(new FilenameFilter() {
 			  @Override
@@ -91,6 +102,7 @@ public class Read_Local_Dicom {
 			}
 			
 		}
+		
 		
 	}
 	

@@ -4,8 +4,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.io.File;
+import java.util.HashMap;
+
 import javax.swing.JScrollPane;
-import javax.swing.JTree;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JTabbedPane;
@@ -16,6 +18,11 @@ public class Reader_Gui extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	private JTable table;
+	private JTable table_1;
+	
+	private DefaultTableModel modelSerie;
+	
+	
 	public Reader_Gui() {
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -28,21 +35,44 @@ public class Reader_Gui extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		panel.add(scrollPane);
 		
-		JTree tree = new JTree();
-		scrollPane.setViewportView(tree);
+		table_1 = new JTable();
+		scrollPane.setViewportView(table_1);
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
 		panel.add(scrollPane_1);
 		
 		table = new JTable();
-		table.setModel(new DefaultTableModel(
+		
+		modelSerie=new DefaultTableModel(
 			new Object[][] {
 			},
 			new String[] {
 				"Modality", "Number of slice", "Serie number", "Serie Description", "Study Date", "Study Description", "Patient ID", "Patient Name"
 			}
-		));
+		);
+		
+		table.setModel(modelSerie);
+		
 		scrollPane_1.setViewportView(table);
+		
 	}
+	
+	public void updateSerieTable(HashMap<File, Series_Details> seriesMap) {
+		
+		for(File directory : seriesMap.keySet()) {
+			Series_Details details=seriesMap.get(directory);
+			modelSerie.addRow(new Object[] {details.modality,
+								details.numberOfImage,
+								details.serieNumber.toString(),
+								details.serieDescription,
+								details.studyDate,
+								details.studyDescription,
+								details.patientId,
+								details.patientName});
+			
+		}
+		
+	}
+	
 
 }
