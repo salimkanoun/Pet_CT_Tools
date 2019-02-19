@@ -15,5 +15,8 @@ public class Dicom_Reader {
 	//Renderer Selection
 	//Read All Study ?
 	//Compressed DICOM?
+	//Size Table Setup
+	// Erase right Click
+	//Progress bar reading
 	
 }
