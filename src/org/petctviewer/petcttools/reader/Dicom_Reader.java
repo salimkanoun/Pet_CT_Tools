@@ -9,4 +9,11 @@ public class Dicom_Reader {
 
 	}
 
+	//SK To DO
+	//DICOM DIR
+	//Registery position folder
+	//Renderer Selection
+	//Read All Study ?
+	//Compressed DICOM?
+	
 }
