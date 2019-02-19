@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.prefs.Preferences;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -35,6 +36,8 @@ public class Reader_Gui extends JFrame {
 	
 	private Reader_Gui gui=this;
 	
+	Preferences jPrefer = Preferences.userNodeForPackage(this.getClass());
+	
 	
 	public Reader_Gui() {
 		super("Read Local Dicoms");
@@ -54,23 +57,27 @@ public class Reader_Gui extends JFrame {
 		
 		JComboBox<Integer> comboBox_position_read = new JComboBox<Integer>();
 		comboBox_position_read.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2,3,4,5,6,7,8,9,10,11,12}));
-		comboBox_position_read.setSelectedIndex(0);
+		comboBox_position_read.setSelectedIndex(getLastRead());
 		panel_north.add(comboBox_position_read);
 		
 		JLabel lblPathNa = new JLabel("Path : N/A");
-		panel_north.add(lblPathNa);
-		
+
 		JButton btnScanFolder = new JButton("Scan Folder");
 		btnScanFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				storeLastRead(comboBox_position_read.getSelectedIndex());
+				String path=(String) table_path_setup.getValueAt( (int) comboBox_position_read.getSelectedItem()-1,1);
+				emptyStudySerieTable();
 				Read_Local_Dicom reader= new Read_Local_Dicom();
-				reader.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00"));
+				reader.scanFolder(new File(path));
+				lblPathNa.setText("Path : "+path);
 				gui.setHashMap(reader.dicomMap);
 				gui.pack();
 				
 			}
 		});
 		panel_north.add(btnScanFolder);
+		panel_north.add(lblPathNa);
 		
 		JPanel panel_center = new JPanel();
 		panel.add(panel_center, BorderLayout.CENTER);
@@ -154,6 +161,7 @@ public class Reader_Gui extends JFrame {
 			}
 		));
 		scrollPane_setup.setViewportView(table_path_setup);
+		loadPreference();
 		
 		JPanel panel_north_stup = new JPanel();
 		panel_setup.add(panel_north_stup, BorderLayout.NORTH);
@@ -173,9 +181,8 @@ public class Reader_Gui extends JFrame {
 				int choose=fc.showOpenDialog(gui);
 				//If choice validated update the table with directory location and store the path in the registery
 				if(choose==JFileChooser.APPROVE_OPTION) {
-					table_path_setup.setValueAt(fc.getSelectedFile(), (int) comboBox_position_setup.getSelectedItem(), 1);
-					
-					//SK FAIRE LE REGISTERY
+					storePreference((int) comboBox_position_setup.getSelectedItem()-1,fc.getSelectedFile().toString());
+					loadPreference();
 				}
 			}
 		});
@@ -238,10 +245,8 @@ public class Reader_Gui extends JFrame {
 	 * @param studyMap
 	 */
 	private void updateSerieTable(HashMap<String, ArrayList<Series_Details>> studyMap) {
-		
 		//Empty the model before filling it
-		modelStudy.setRowCount(0);
-		
+		emptyStudySerieTable();
 		for(String studyUID : studyMap.keySet()) {
 			
 			ArrayList<Series_Details> details=studyMap.get(studyUID);
@@ -259,6 +264,11 @@ public class Reader_Gui extends JFrame {
 		
 	}
 	
+	private void emptyStudySerieTable() {
+		modelStudy.setRowCount(0);
+		((DefaultTableModel) tableSeries.getModel()).setRowCount(0);
+	}
+	
 	/**
 	 * Open DICOMs contained in array list of folders (1 folder = 1 serie)
 	 * @param folders
@@ -269,10 +279,31 @@ public class Reader_Gui extends JFrame {
 			Image_Reader reader=new Image_Reader(folder);
 			ImagePlus image=reader.getImagePlus();
 			image.show();
+		}
 			
+	}
+		
+	private void storePreference(int position, String path) {
+		jPrefer.put("path"+position, path);
+	}
+	
+	private void storeLastRead(int position) {
+		jPrefer.putInt("lastRead", position);
+	}
+	
+	private int getLastRead() {
+		 return jPrefer.getInt("lastRead", 0);
+	}
+	
+	private void loadPreference() {
+		for (int i=0 ; i<12 ; i++) {
+			String path=jPrefer.get("path"+i, null);
+			table_path_setup.setValueAt(path, i, 1);
 		}
 		
+	}
+		
 			
 		
-	}
+	
 }

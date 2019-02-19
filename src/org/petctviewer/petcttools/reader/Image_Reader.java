@@ -88,7 +88,7 @@ public class Image_Reader {
 	
 	/**
 	 * Sort stack according to ImageNumber
-	 * In uparseable ImageNumber return the orignal stack without change
+	 * In uparseable ImageNumber or non labelled image in stack, return the orignal stack without change
 	 * @param imp : Original Image plus
 	 * @return ImageStack : New ordered stack image by ImageNumber
 	 */
@@ -103,6 +103,7 @@ public class Image_Reader {
 			try {
 				imp.setSlice(i);
 				String imageNumber=DicomTools.getTag(imp, "0020,0013").trim();
+				System.out.println(imageNumber);
 				sliceMap.put(Integer.parseInt(imageNumber), i);	
 			
 			}catch(Exception e1){
@@ -111,10 +112,17 @@ public class Image_Reader {
 			}
 		}
 		
-		for(int i=1; i<=imp.getStackSize(); i++){
-			int sliceToadd=sliceMap.get(i);
-			stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
+		//Check that the number of parsed image number is matching the number of slice
+		if(sliceMap.size() ==imp.getStackSize()) {
+			for(int i=1; i<=imp.getStackSize(); i++){
+				int sliceToadd=sliceMap.get(i);
+				stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
+			}
+		//Else return original stack	
+		}else {
+			return imp.getStack();
 		}
+		
 		
 		return stack2;
 	}
