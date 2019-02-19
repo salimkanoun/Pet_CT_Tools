@@ -1,31 +1,28 @@
 package org.petctviewer.petcttools.reader;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.JTabbedPane;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JLabel;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.ListSelectionModel;
-import javax.swing.AbstractListModel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
+
+import ij.ImagePlus;
 
 @SuppressWarnings("serial")
 public class Reader_Gui extends JFrame {
@@ -33,15 +30,14 @@ public class Reader_Gui extends JFrame {
 	private JTable tableSeries;
 	private JTable tableStudy;
 	
-	private Read_Local_Dicom dicomReader;
-	
 	private Table_Study_Model modelStudy;
-	private JTable table;
+	private JTable table_path_setup;
+	
+	private Reader_Gui gui=this;
 	
 	
-	public Reader_Gui(Read_Local_Dicom dicomReader) {
+	public Reader_Gui() {
 		super("Read Local Dicoms");
-		this.dicomReader=dicomReader;
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		getContentPane().add(tabbedPane, BorderLayout.NORTH);
 		
@@ -65,6 +61,15 @@ public class Reader_Gui extends JFrame {
 		panel_north.add(lblPathNa);
 		
 		JButton btnScanFolder = new JButton("Scan Folder");
+		btnScanFolder.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Read_Local_Dicom reader= new Read_Local_Dicom();
+				reader.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00"));
+				gui.setHashMap(reader.dicomMap);
+				gui.pack();
+				
+			}
+		});
 		panel_north.add(btnScanFolder);
 		
 		JPanel panel_center = new JPanel();
@@ -74,20 +79,7 @@ public class Reader_Gui extends JFrame {
 		JScrollPane scrollPane_study = new JScrollPane();
 		panel_center.add(scrollPane_study);
 		
-		tableStudy = new JTable(){			
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
-		
-	        Component returnComp = super.prepareRenderer(renderer, row, column);
-	        Color alternateColor = new Color(204, 204, 204);
-	        Color whiteColor = Color.WHITE;
-	        if (!returnComp.getBackground().equals(getSelectionBackground())){
-	            Color bg = (row % 2 == 0 ? alternateColor : whiteColor);
-	            returnComp .setBackground(bg);
-	            bg = null;
-	        }
-	        return returnComp;
-	        }
-		};
+		tableStudy = new JTable_Color();
 		
 		tableStudy.setModel(modelStudy);
 		scrollPane_study.setViewportView(tableStudy);
@@ -102,20 +94,7 @@ public class Reader_Gui extends JFrame {
 		JScrollPane scrollPane_serie = new JScrollPane();
 		panel_center.add(scrollPane_serie);
 		
-		tableSeries = new JTable(){			
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
-				
-		        Component returnComp = super.prepareRenderer(renderer, row, column);
-		        Color alternateColor = new Color(204, 204, 204);
-		        Color whiteColor = Color.WHITE;
-		        if (!returnComp.getBackground().equals(getSelectionBackground())){
-		            Color bg = (row % 2 == 0 ? alternateColor : whiteColor);
-		            returnComp .setBackground(bg);
-		            bg = null;
-		        }
-		        return returnComp;
-		        }
-			};
+		tableSeries = new JTable_Color();
 			
 		tableSeries.setAutoCreateRowSorter(true);
 		
@@ -134,7 +113,7 @@ public class Reader_Gui extends JFrame {
 					for(int row : rows) {
 						folders.add((File) tableSeries.getValueAt(row, 4));
 					}
-					dicomReader.openFolders(folders);
+					openFolders(folders);
 					
 				}
 				
@@ -150,9 +129,12 @@ public class Reader_Gui extends JFrame {
 		JPanel panel_center_setup = new JPanel();
 		panel_setup.add(panel_center_setup);
 		
-		table = new JTable();
-		table.setEnabled(false);
-		table.setModel(new DefaultTableModel(
+		JScrollPane scrollPane_setup = new JScrollPane();
+		panel_center_setup.add(scrollPane_setup);
+		
+		table_path_setup = new JTable_Color();
+		table_path_setup.setEnabled(false);
+		table_path_setup.setModel(new DefaultTableModel(
 			new String[][] {
 				{"1", null},
 				{"2", null},
@@ -171,7 +153,7 @@ public class Reader_Gui extends JFrame {
 				"Position", "Path"
 			}
 		));
-		panel_center_setup.add(table);
+		scrollPane_setup.setViewportView(table_path_setup);
 		
 		JPanel panel_north_stup = new JPanel();
 		panel_setup.add(panel_north_stup, BorderLayout.NORTH);
@@ -183,6 +165,20 @@ public class Reader_Gui extends JFrame {
 		panel_north_stup.add(comboBox_position_setup);
 		
 		JButton btnNewButton = new JButton("Select Folder");
+		
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				JFileChooser fc = new JFileChooser();
+				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				int choose=fc.showOpenDialog(gui);
+				//If choice validated update the table with directory location and store the path in the registery
+				if(choose==JFileChooser.APPROVE_OPTION) {
+					table_path_setup.setValueAt(fc.getSelectedFile(), (int) comboBox_position_setup.getSelectedItem(), 1);
+					
+					//SK FAIRE LE REGISTERY
+				}
+			}
+		});
 		panel_north_stup.add(btnNewButton);
 		
 		tableStudy.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -212,7 +208,11 @@ public class Reader_Gui extends JFrame {
 		
 	}
 	
-	public void setHashMap(HashMap<File, Series_Details> seriesMap) {
+	/**
+	 * Build a map of study sorted by studyUID, will be used to fill the study/serie table
+	 * @param seriesMap
+	 */
+	private void setHashMap(HashMap<File, Series_Details> seriesMap) {
 		
 		HashMap<String, ArrayList<Series_Details>> studyMap=new HashMap<String, ArrayList<Series_Details>>();
 		
@@ -233,8 +233,14 @@ public class Reader_Gui extends JFrame {
 		
 	}
 	
+	/**
+	 * Update the study tabel with the scann results
+	 * @param studyMap
+	 */
 	private void updateSerieTable(HashMap<String, ArrayList<Series_Details>> studyMap) {
 		
+		//Empty the model before filling it
+		modelStudy.setRowCount(0);
 		
 		for(String studyUID : studyMap.keySet()) {
 			
@@ -250,6 +256,23 @@ public class Reader_Gui extends JFrame {
 			
 		}
 		
+		
+	}
+	
+	/**
+	 * Open DICOMs contained in array list of folders (1 folder = 1 serie)
+	 * @param folders
+	 */
+	private void openFolders(ArrayList<File> folders) {
+		
+		for(File folder: folders) {
+			Image_Reader reader=new Image_Reader(folder);
+			ImagePlus image=reader.getImagePlus();
+			image.show();
+			
+		}
+		
+			
 		
 	}
 }

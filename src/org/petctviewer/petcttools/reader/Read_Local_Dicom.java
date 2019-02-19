@@ -10,27 +10,11 @@ import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.io.DicomInputStream;
 
-import ij.ImagePlus;
-
 public class Read_Local_Dicom {
 	
 	ArrayList<File> folderList;
 	HashMap<File, Series_Details> dicomMap;
 	File folderToRead;
-
-	public static void main(String[] args) {
-		Read_Local_Dicom read = new Read_Local_Dicom();
-		//read.readFile(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
-		//read.readFileBioFormat(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
-		read.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00"));
-		//read.scanFolder(new File("/home/salim/Bureau/EsportatiHoros/"));
-		//read.openAllFolders();
-		
-		Reader_Gui gui=new Reader_Gui(read);
-		gui.setHashMap(read.dicomMap);
-		gui.pack();
-		gui.setVisible(true);
-	}
 	
 	public void scanFolder(File folderToRead) {
 		this.folderToRead=folderToRead;
@@ -106,18 +90,7 @@ public class Read_Local_Dicom {
 		
 	}
 	
-	public void openFolders(ArrayList<File> folders) {
-		
-		for(File folder: folders) {
-			Image_Reader reader=new Image_Reader(folder);
-			ImagePlus image=reader.getImagePlus();
-			image.show();
-			
-		}
-		
-			
-		
-	}
+	
 	
 	
 	
