@@ -11,12 +11,12 @@ public class Dicom_Reader {
 
 	//SK To DO
 	//DICOM DIR
-	//Registery position folder
+	//Erase right Click
+	//Progress bar reading
 	//Renderer Selection
 	//Read All Study ?
 	//Compressed DICOM?
-	//Size Table Setup
-	// Erase right Click
-	//Progress bar reading
+	//Size Table Setup?
+
 	
 }

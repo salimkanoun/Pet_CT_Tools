@@ -44,13 +44,13 @@ public class Reader_Gui extends JFrame {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		getContentPane().add(tabbedPane, BorderLayout.NORTH);
 		
-		JPanel panel = new JPanel();
-		tabbedPane.addTab("Read", null, panel, null);
-		panel.setLayout(new BorderLayout(0, 0));
+		JPanel panel_read = new JPanel();
+		tabbedPane.addTab("Read", null, panel_read, null);
+		panel_read.setLayout(new BorderLayout(0, 0));
 		modelStudy=new Table_Study_Model();
 		
 		JPanel panel_north = new JPanel();
-		panel.add(panel_north, BorderLayout.NORTH);
+		panel_read.add(panel_north, BorderLayout.NORTH);
 		
 		JLabel lblSelector = new JLabel("Selector");
 		panel_north.add(lblSelector);
@@ -80,7 +80,7 @@ public class Reader_Gui extends JFrame {
 		panel_north.add(lblPathNa);
 		
 		JPanel panel_center = new JPanel();
-		panel.add(panel_center, BorderLayout.CENTER);
+		panel_read.add(panel_center, BorderLayout.CENTER);
 		panel_center.setLayout(new GridLayout(0, 2, 0, 0));
 		
 		JScrollPane scrollPane_study = new JScrollPane();
@@ -108,7 +108,7 @@ public class Reader_Gui extends JFrame {
 		scrollPane_serie.setViewportView(tableSeries);
 		
 		JPanel panel_east = new JPanel();
-		panel.add(panel_east, BorderLayout.EAST);
+		panel_read.add(panel_east, BorderLayout.EAST);
 		
 		JButton btnRead = new JButton("Read");
 		btnRead.addActionListener(new ActionListener() {
@@ -135,6 +135,7 @@ public class Reader_Gui extends JFrame {
 		
 		JPanel panel_center_setup = new JPanel();
 		panel_setup.add(panel_center_setup);
+		panel_center_setup.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		JScrollPane scrollPane_setup = new JScrollPane();
 		panel_center_setup.add(scrollPane_setup);
@@ -160,11 +161,17 @@ public class Reader_Gui extends JFrame {
 				"Position", "Path"
 			}
 		));
+		
+		table_path_setup.getColumnModel().getColumn(0).setMinWidth(100);
+		table_path_setup.getColumnModel().getColumn(0).setMaxWidth(100);
 		scrollPane_setup.setViewportView(table_path_setup);
 		loadPreference();
 		
 		JPanel panel_north_stup = new JPanel();
 		panel_setup.add(panel_north_stup, BorderLayout.NORTH);
+		
+		JLabel lblModifyPosition = new JLabel("Modify Position : ");
+		panel_north_stup.add(lblModifyPosition);
 		
 		JComboBox<Integer> comboBox_position_setup = new JComboBox<Integer>();
 		comboBox_position_setup.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2,3,4,5,6,7,8,9,10,11,12}));
