@@ -22,8 +22,8 @@ public class Read_Local_Dicom {
 		Read_Local_Dicom read = new Read_Local_Dicom();
 		//read.readFile(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
 		//read.readFileBioFormat(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001\\PET0\\1.2.840.113704.1.111.5352.1350646167.8\\CT_001_0a63112d11044b85a7d247852479b063.dcm"));
-		//read.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00\\11011101021001"));
-		read.scanFolder(new File("/home/salim/Bureau/EsportatiHoros/"));
+		read.scanFolder(new File("G:\\GAINED_Complet_CopieExportFinal\\Batch00"));
+		//read.scanFolder(new File("/home/salim/Bureau/EsportatiHoros/"));
 		//read.openAllFolders();
 		
 		Reader_Gui gui=new Reader_Gui(read);
@@ -79,7 +79,7 @@ public class Read_Local_Dicom {
 				String serieDescription=meta2.getString(Tag.SeriesDescription);
 				String serieNumber=meta2.getString(Tag.SeriesNumber);
 				String accessionNumber=meta2.getString(Tag.AccessionNumber);
-				String numberOfImage=meta2.getString(Tag.NumberOfSlices);
+				String numberOfImage=String.valueOf(files.length);
 				System.out.println(numberOfImage);
 				String modality=meta2.getString(Tag.Modality);
 				String sopClassUID=meta2.getString(Tag.SOPClassUID);

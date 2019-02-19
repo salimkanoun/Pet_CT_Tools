@@ -3,6 +3,8 @@ package org.petctviewer.petcttools.reader;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
 import java.io.File;
 import java.util.ArrayList;
@@ -12,12 +14,18 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.JTabbedPane;
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JLabel;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.AbstractListModel;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 @SuppressWarnings("serial")
 public class Reader_Gui extends JFrame {
@@ -28,6 +36,7 @@ public class Reader_Gui extends JFrame {
 	private Read_Local_Dicom dicomReader;
 	
 	private Table_Study_Model modelStudy;
+	private JTable table;
 	
 	
 	public Reader_Gui(Read_Local_Dicom dicomReader) {
@@ -44,8 +53,13 @@ public class Reader_Gui extends JFrame {
 		JPanel panel_north = new JPanel();
 		panel.add(panel_north, BorderLayout.NORTH);
 		
-		JList list = new JList();
-		panel_north.add(list);
+		JLabel lblSelector = new JLabel("Selector");
+		panel_north.add(lblSelector);
+		
+		JComboBox<Integer> comboBox_position_read = new JComboBox<Integer>();
+		comboBox_position_read.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2,3,4,5,6,7,8,9,10,11,12}));
+		comboBox_position_read.setSelectedIndex(0);
+		panel_north.add(comboBox_position_read);
 		
 		JLabel lblPathNa = new JLabel("Path : N/A");
 		panel_north.add(lblPathNa);
@@ -60,7 +74,21 @@ public class Reader_Gui extends JFrame {
 		JScrollPane scrollPane_study = new JScrollPane();
 		panel_center.add(scrollPane_study);
 		
-		tableStudy = new JTable();
+		tableStudy = new JTable(){			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
+		
+	        Component returnComp = super.prepareRenderer(renderer, row, column);
+	        Color alternateColor = new Color(204, 204, 204);
+	        Color whiteColor = Color.WHITE;
+	        if (!returnComp.getBackground().equals(getSelectionBackground())){
+	            Color bg = (row % 2 == 0 ? alternateColor : whiteColor);
+	            returnComp .setBackground(bg);
+	            bg = null;
+	        }
+	        return returnComp;
+	        }
+		};
+		
 		tableStudy.setModel(modelStudy);
 		scrollPane_study.setViewportView(tableStudy);
 		
@@ -74,7 +102,22 @@ public class Reader_Gui extends JFrame {
 		JScrollPane scrollPane_serie = new JScrollPane();
 		panel_center.add(scrollPane_serie);
 		
-		tableSeries = new JTable();
+		tableSeries = new JTable(){			
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
+				
+		        Component returnComp = super.prepareRenderer(renderer, row, column);
+		        Color alternateColor = new Color(204, 204, 204);
+		        Color whiteColor = Color.WHITE;
+		        if (!returnComp.getBackground().equals(getSelectionBackground())){
+		            Color bg = (row % 2 == 0 ? alternateColor : whiteColor);
+		            returnComp .setBackground(bg);
+		            bg = null;
+		        }
+		        return returnComp;
+		        }
+			};
+			
+		tableSeries.setAutoCreateRowSorter(true);
 		
 		scrollPane_serie.setViewportView(tableSeries);
 		
@@ -107,8 +150,40 @@ public class Reader_Gui extends JFrame {
 		JPanel panel_center_setup = new JPanel();
 		panel_setup.add(panel_center_setup);
 		
+		table = new JTable();
+		table.setEnabled(false);
+		table.setModel(new DefaultTableModel(
+			new String[][] {
+				{"1", null},
+				{"2", null},
+				{"3", null},
+				{"4", null},
+				{"5", null},
+				{"6", null},
+				{"7", null},
+				{"8", null},
+				{"9", null},
+				{"10", null},
+				{"11", null},
+				{"12", null},
+			},
+			new String[] {
+				"Position", "Path"
+			}
+		));
+		panel_center_setup.add(table);
+		
+		JPanel panel_north_stup = new JPanel();
+		panel_setup.add(panel_north_stup, BorderLayout.NORTH);
+		
+		JComboBox<Integer> comboBox_position_setup = new JComboBox<Integer>();
+		comboBox_position_setup.setModel(new DefaultComboBoxModel<Integer>(new Integer[] {1, 2,3,4,5,6,7,8,9,10,11,12}));
+		comboBox_position_setup.setSelectedIndex(0);
+		comboBox_position_setup.setMaximumRowCount(12);
+		panel_north_stup.add(comboBox_position_setup);
+		
 		JButton btnNewButton = new JButton("Select Folder");
-		panel_center_setup.add(btnNewButton);
+		panel_north_stup.add(btnNewButton);
 		
 		tableStudy.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 			@Override
