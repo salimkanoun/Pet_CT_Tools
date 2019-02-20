@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JButton;
+
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.io.DicomInputStream;
@@ -15,9 +17,11 @@ public class Read_Local_Dicom {
 	ArrayList<File> folderList;
 	HashMap<File, Series_Details> dicomMap;
 	File folderToRead;
+	JButton buttonScann;
 	
-	public void scanFolder(File folderToRead) {
+	public void scanFolder(File folderToRead, JButton buttonScann) {
 		this.folderToRead=folderToRead;
+		this.buttonScann=buttonScann;
 		folderList=new ArrayList<File>();
 		dicomMap=new HashMap<File, Series_Details>();
 		recursiveScanFolder(folderToRead);
@@ -43,6 +47,7 @@ public class Read_Local_Dicom {
 		if(directories.length==0 
 				&& files.length>0) {
 			
+			System.out.println(files[0]);
 			Attributes meta2 = null;
 			DicomInputStream dis = null;
 			try {
@@ -64,7 +69,6 @@ public class Read_Local_Dicom {
 				String serieNumber=meta2.getString(Tag.SeriesNumber);
 				String accessionNumber=meta2.getString(Tag.AccessionNumber);
 				String numberOfImage=String.valueOf(files.length);
-				System.out.println(numberOfImage);
 				String modality=meta2.getString(Tag.Modality);
 				String sopClassUID=meta2.getString(Tag.SOPClassUID);
 				
@@ -75,6 +79,7 @@ public class Read_Local_Dicom {
 				dicomMap.put(files[0].getParentFile(), 
 						details);
 				
+				buttonScann.setText("Scanned "+dicomMap.size()+" Series");
 
 
 			//Add found folder in the arrayList of folder that can be opened

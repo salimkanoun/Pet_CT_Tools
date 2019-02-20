@@ -19,9 +19,12 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+
+import org.apache.commons.lang3.StringUtils;
 
 import ij.ImagePlus;
 
@@ -67,12 +70,34 @@ public class Reader_Gui extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				storeLastRead(comboBox_position_read.getSelectedIndex());
 				String path=(String) table_path_setup.getValueAt( (int) comboBox_position_read.getSelectedItem()-1,1);
-				emptyStudySerieTable();
-				Read_Local_Dicom reader= new Read_Local_Dicom();
-				reader.scanFolder(new File(path));
 				lblPathNa.setText("Path : "+path);
-				gui.setHashMap(reader.dicomMap);
-				gui.pack();
+				emptyStudySerieTable();
+				btnScanFolder.setEnabled(false);
+				
+				SwingWorker<Void,Void> worker=new SwingWorker<Void,Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						Read_Local_Dicom reader= new Read_Local_Dicom();
+						reader.scanFolder(new File(path), btnScanFolder);
+						gui.setHashMap(reader.dicomMap);
+						gui.pack();
+						return null;
+					}
+					
+					@Override
+				  	protected void done() {
+						btnScanFolder.setEnabled(true);
+						btnScanFolder.setText("Scan Folder");
+					}
+
+					
+				};
+				
+				worker.execute();
+				
+				
+				
 				
 			}
 		});
@@ -185,10 +210,13 @@ public class Reader_Gui extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				JFileChooser fc = new JFileChooser();
 				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+				if(!StringUtils.isEmpty((String) table_path_setup.getValueAt(comboBox_position_setup.getSelectedIndex(), 1))) {
+					fc.setSelectedFile(new File((String) table_path_setup.getValueAt(comboBox_position_setup.getSelectedIndex(), 1)+File.separator+"child"));
+				}
 				int choose=fc.showOpenDialog(gui);
 				//If choice validated update the table with directory location and store the path in the registery
 				if(choose==JFileChooser.APPROVE_OPTION) {
-					storePreference((int) comboBox_position_setup.getSelectedItem()-1,fc.getSelectedFile().toString());
+					storePreference((int) comboBox_position_setup.getSelectedIndex(),fc.getSelectedFile().toString()+File.separator);
 					loadPreference();
 				}
 			}
