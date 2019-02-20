@@ -2,7 +2,11 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.HashMap;
+
+import org.dcm4che3.data.Attributes;
+import org.dcm4che3.media.DicomDirReader;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -125,6 +129,48 @@ public class Image_Reader {
 		
 		
 		return stack2;
+	}
+	
+	public static void readDicomDir(File dicomDir) {
+
+		dicomDir=new File("/home/salim/DICOMDIR/dicom/DICOMDIR");
+		
+		try {
+			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
+			
+			Attributes dcmDirAttributes=dicomDirReader.getFileMetaInformation();
+			Attributes dcmDirAttributes2=dicomDirReader.getFileSetInformation();
+			
+			System.out.println(dcmDirAttributes);
+			System.out.println(dcmDirAttributes2);
+			Attributes dcmDirAttributes3=dicomDirReader.readFirstRootDirectoryRecord();
+			
+			System.out.println(dcmDirAttributes3);
+			Attributes previous=dcmDirAttributes3;
+			while(dicomDirReader.readLowerDirectoryRecord(previous)!=null) {
+				previous=dicomDirReader.readLowerDirectoryRecord(previous);
+				System.out.println(previous);
+				
+			}
+			
+			Attributes dcmDirAttributes5=dicomDirReader.readNextDirectoryRecord(previous);
+			System.out.println(dcmDirAttributes5);
+			
+			dicomDirReader.close();
+			//System.out.println(dcmDirAttributes);
+			//System.out.println(dcmDirAttributes2);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	public static void main(String[] args) {
+		Image_Reader.readDicomDir(null);
+		
+		
 	}
 
 }
