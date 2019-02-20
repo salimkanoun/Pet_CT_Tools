@@ -139,10 +139,10 @@ public class Image_Reader {
 			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
 			
 			Attributes dcmDirAttributes=dicomDirReader.getFileMetaInformation();
-			Attributes dcmDirAttributes2=dicomDirReader.getFileSetInformation();
+			//Attributes dcmDirAttributes2=dicomDirReader.getFileSetInformation();
 			
 			System.out.println(dcmDirAttributes);
-			System.out.println(dcmDirAttributes2);
+			//System.out.println(dcmDirAttributes2);
 			Attributes dcmDirAttributes3=dicomDirReader.readFirstRootDirectoryRecord();
 			
 			System.out.println(dcmDirAttributes3);
@@ -152,10 +152,18 @@ public class Image_Reader {
 				System.out.println(previous);
 				
 			}
+		
 			
 			Attributes dcmDirAttributes5=dicomDirReader.readNextDirectoryRecord(previous);
-			System.out.println(dcmDirAttributes5);
 			
+			Attributes previous2=dcmDirAttributes5;
+			while(dicomDirReader.readLowerDirectoryRecord(previous2)!=null) {
+				previous2=dicomDirReader.readLowerDirectoryRecord(previous2);
+				System.out.println(previous2);
+				
+			}
+			System.out.println(dcmDirAttributes5);
+						
 			dicomDirReader.close();
 			//System.out.println(dcmDirAttributes);
 			//System.out.println(dcmDirAttributes2);
