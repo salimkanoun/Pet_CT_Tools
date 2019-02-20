@@ -2,9 +2,11 @@ package org.petctviewer.petcttools.reader;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
@@ -15,15 +17,22 @@ import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import ij.ImagePlus;
@@ -33,6 +42,7 @@ public class Reader_Gui extends JFrame {
 
 	private JTable tableSeries;
 	private JTable tableStudy;
+	private JButton btnScanFolder;
 	
 	private Table_Study_Model modelStudy;
 	private JTable table_path_setup;
@@ -65,7 +75,7 @@ public class Reader_Gui extends JFrame {
 		
 		JLabel lblPathNa = new JLabel("Path : N/A");
 
-		JButton btnScanFolder = new JButton("Scan Folder");
+		btnScanFolder = new JButton("Scan Folder");
 		btnScanFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				storeLastRead(comboBox_position_read.getSelectedIndex());
@@ -122,6 +132,7 @@ public class Reader_Gui extends JFrame {
 		tableStudy.getColumnModel().getColumn(6).setMaxWidth(0);
 		
 		tableStudy.setAutoCreateRowSorter(true);
+		addPopupMenu(tableStudy);
 		
 		JScrollPane scrollPane_serie = new JScrollPane();
 		panel_center.add(scrollPane_serie);
@@ -129,6 +140,7 @@ public class Reader_Gui extends JFrame {
 		tableSeries = new JTable_Color();
 			
 		tableSeries.setAutoCreateRowSorter(true);
+		addPopupMenu(tableSeries);
 		
 		scrollPane_serie.setViewportView(tableSeries);
 		
@@ -291,7 +303,7 @@ public class Reader_Gui extends JFrame {
 					details.get(0).studyDate,
 					details.get(0).studyDescription,
 					details.get(0).accessionNumber,
-					details.get(0).fileLocation,
+					details.get(0).fileLocation.getParentFile(),
 					details});
 			
 		}
@@ -337,6 +349,72 @@ public class Reader_Gui extends JFrame {
 		}
 		
 	}
+	
+	
+	private void addPopupMenu(JTable table) {
+		
+		JPopupMenu popMenuDelete = new JPopupMenu();
+		
+		JMenuItem menuItemModifySeries = new JMenuItem("Delete Files");
+		
+		menuItemModifySeries.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				File directory=(File) table.getValueAt(table.getSelectedRow(), table.getColumnCount()-2);
+				int response=JOptionPane.showConfirmDialog(gui, "File Will Be Erased, This can't be undone !", "Definitive Erase", JOptionPane.WARNING_MESSAGE);
+				if(response==JOptionPane.YES_OPTION) {
+					try {
+						FileUtils.deleteDirectory(directory);
+						btnScanFolder.doClick();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+					
+				}
+
+				
+			}
+			
+		});
+	
+		popMenuDelete.add(menuItemModifySeries);
+
+		popMenuDelete.addPopupMenuListener(new PopupMenuListener() {
+
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        int rowAtPoint = table.rowAtPoint(SwingUtilities.convertPoint(popMenuDelete, new Point(0, 0), table));
+                        if (rowAtPoint > -1) {
+                        	table.setRowSelectionInterval(rowAtPoint, rowAtPoint);
+                        }
+                    }
+                });
+            }
+
+			@Override
+			public void popupMenuCanceled(PopupMenuEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+	
+		});
+		
+		table.setComponentPopupMenu(popMenuDelete);
+		
+	}
+	
+	
+
 		
 			
 		
