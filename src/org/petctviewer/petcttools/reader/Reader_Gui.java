@@ -201,6 +201,7 @@ public class Reader_Gui extends JFrame {
 		
 		table_path_setup.getColumnModel().getColumn(0).setMinWidth(100);
 		table_path_setup.getColumnModel().getColumn(0).setMaxWidth(100);
+
 		scrollPane_setup.setViewportView(table_path_setup);
 		loadPreference();
 		
@@ -250,6 +251,11 @@ public class Reader_Gui extends JFrame {
 					tableSeries.getColumnModel().getColumn(4).setMaxWidth(0);
 					tableSeries.getColumnModel().getColumn(5).setMinWidth(0);
 					tableSeries.getColumnModel().getColumn(5).setMaxWidth(0);
+					
+		
+					tableSeries.getColumnModel().getColumn(1).setMaxWidth(100);
+
+					tableSeries.getColumnModel().getColumn(3).setMaxWidth(100);
 					
 				}
 				

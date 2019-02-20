@@ -8,7 +8,7 @@ import javax.swing.table.DefaultTableModel;
 @SuppressWarnings("serial")
 public class Table_Series_Model extends DefaultTableModel{
 	
-	private String[] columnTitle = {"Serie Description", "Modality","Serie number", "Number of slice", "Serie Directory", "Series Object" };
+	private String[] columnTitle = {"Serie Description", "Modality","Serie number", "Slices", "Serie Directory", "Series Object" };
 	private Class<?>[] columnClass = {String.class, String.class, String.class, Integer.class, File.class, Series_Details.class};
 	
 	ArrayList<Series_Details> series;
