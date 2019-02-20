@@ -16,7 +16,8 @@ public class Dicom_Reader {
 	//Renderer Selection
 	//Read All Study ?
 	//Compressed DICOM?
-	//Pb Scan DICOM dans Bureau à voir
+	//Pb Scan DICOM dans Bureau à voir => filtre sur taille ?
+	// Presence du GR de BF ?
 
 	
 }
