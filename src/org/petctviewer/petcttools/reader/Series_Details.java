@@ -54,8 +54,7 @@ public class Series_Details {
 		try {
 			defaultDate = format.parse("19000101");
 			studyDateParsed=format.parse(studyDate);
-			
-		} catch (ParseException e) {
+		} catch (Exception e) {
 			studyDateParsed=defaultDate;
 		}
 		

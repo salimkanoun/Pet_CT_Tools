@@ -47,18 +47,19 @@ public class Read_Local_Dicom {
 		if(directories.length==0 
 				&& files.length>0) {
 			
-			System.out.println(files[0]);
 			Attributes meta2 = null;
 			DicomInputStream dis = null;
 			try {
 				dis=new DicomInputStream(files[0]);
+				dis.setAllocateLimit(-1);
 				meta2=dis.readDataset(-1, -1);
 				dis.close();
-			} catch (IOException e) {
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
+			//System.out.println("met"+meta2);
 				String patientName=meta2.getString(Tag.PatientName);
 				String patientId=meta2.getString(Tag.PatientID);
 				String ts=dis.getTransferSyntax();
@@ -74,7 +75,6 @@ public class Read_Local_Dicom {
 				
 				Series_Details details=new Series_Details(ts, patientName, patientId, accessionNumber, studyUID, studyDescription,
 						studyDate, serieDescription, serieNumber, modality, numberOfImage, sopClassUID, files[0].getParentFile());
-				
 				
 				dicomMap.put(files[0].getParentFile(), 
 						details);
