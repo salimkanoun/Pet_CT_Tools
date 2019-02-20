@@ -16,6 +16,7 @@ public class Dicom_Reader {
 	//Renderer Selection
 	//Read All Study ?
 	//Compressed DICOM?
+	//Pb Scan DICOM dans Bureau à voir
 
 	
 }
