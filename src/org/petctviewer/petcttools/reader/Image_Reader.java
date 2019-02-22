@@ -144,18 +144,11 @@ public class Image_Reader {
 			System.out.println(dcmDirAttributes);
 			//System.out.println(dcmDirAttributes2);
 			Attributes dcmDirAttributes3=dicomDirReader.readFirstRootDirectoryRecord();
+			Attributes last=readLowerDirectoryDicomDir(dicomDirReader,dcmDirAttributes3);
 			
-			System.out.println(dcmDirAttributes3);
-			Attributes previous=dcmDirAttributes3;
-			while(dicomDirReader.readLowerDirectoryRecord(previous)!=null) {
-				previous=dicomDirReader.readLowerDirectoryRecord(previous);
-				System.out.println(previous);
-				
-			}
-		
-			
-			Attributes dcmDirAttributes5=dicomDirReader.readNextDirectoryRecord(previous);
-			
+			System.out.println("nextDiretctory");
+			Attributes dcmDirAttributes5=dicomDirReader.readNextDirectoryRecord(last);
+
 			Attributes previous2=dcmDirAttributes5;
 			while(dicomDirReader.readLowerDirectoryRecord(previous2)!=null) {
 				previous2=dicomDirReader.readLowerDirectoryRecord(previous2);
@@ -173,6 +166,16 @@ public class Image_Reader {
 			e.printStackTrace();
 		}
 
+	}
+	
+	private static Attributes readLowerDirectoryDicomDir(DicomDirReader dicomDirReader, Attributes current) throws IOException {
+		while(dicomDirReader.readLowerDirectoryRecord(current)!=null) {
+			System.out.println("lower");
+			current=dicomDirReader.readLowerDirectoryRecord(current);
+			System.out.println(current);
+			
+		}
+		return current;
 	}
 	
 	public static void main(String[] args) {
