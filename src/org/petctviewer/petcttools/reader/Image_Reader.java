@@ -138,25 +138,19 @@ public class Image_Reader {
 		try {
 			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
 			
-			Attributes dcmDirAttributes=dicomDirReader.getFileMetaInformation();
+			//Attributes dcmDirAttributes=dicomDirReader.getFileMetaInformation();
 			//Attributes dcmDirAttributes2=dicomDirReader.getFileSetInformation();
 			
-			System.out.println(dcmDirAttributes);
+			//System.out.println(dcmDirAttributes);
 			//System.out.println(dcmDirAttributes2);
-			Attributes dcmDirAttributes3=dicomDirReader.readFirstRootDirectoryRecord();
-			Attributes last=readLowerDirectoryDicomDir(dicomDirReader,dcmDirAttributes3);
-			
-			System.out.println("nextDiretctory");
-			Attributes dcmDirAttributes5=dicomDirReader.readNextDirectoryRecord(last);
-
-			Attributes previous2=dcmDirAttributes5;
-			while(dicomDirReader.readLowerDirectoryRecord(previous2)!=null) {
-				previous2=dicomDirReader.readLowerDirectoryRecord(previous2);
-				System.out.println(previous2);
-				
+			Attributes last=dicomDirReader.readFirstRootDirectoryRecord();
+			//last=dicomDirReader.readLastRootDirectoryRecord();
+			//System.out.println(last);
+			dicomDirReader.readNextDirectoryRecord(last);
+			while(dicomDirReader.readNextDirectoryRecord(last)!= null) {
+				last=readLowerDirectoryDicomDir(dicomDirReader,last);
 			}
-			System.out.println(dcmDirAttributes5);
-						
+	
 			dicomDirReader.close();
 			//System.out.println(dcmDirAttributes);
 			//System.out.println(dcmDirAttributes2);
@@ -169,12 +163,14 @@ public class Image_Reader {
 	}
 	
 	private static Attributes readLowerDirectoryDicomDir(DicomDirReader dicomDirReader, Attributes current) throws IOException {
+		
 		while(dicomDirReader.readLowerDirectoryRecord(current)!=null) {
 			System.out.println("lower");
 			current=dicomDirReader.readLowerDirectoryRecord(current);
 			System.out.println(current);
 			
 		}
+		System.out.println("end");
 		return current;
 	}
 	
