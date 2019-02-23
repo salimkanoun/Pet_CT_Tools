@@ -1,6 +1,5 @@
 package org.petctviewer.petcttools.reader.dicomdir;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 

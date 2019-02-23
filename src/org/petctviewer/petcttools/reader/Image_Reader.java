@@ -145,27 +145,23 @@ public class Image_Reader {
 
 		dicomDir=new File("/home/salim/DICOMDIR/dicom/DICOMDIR");
 		
+		ArrayList<Patient_DicomDir> patients=new ArrayList<Patient_DicomDir>();
+		
 		try {
 			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
-			
-			
+						
 			Attributes patientAttributes=dicomDirReader.readFirstRootDirectoryRecord();
 			
 			Patient_DicomDir patient=new Patient_DicomDir(patientAttributes,dicomDirReader);
 			
+			patients.add(patient);
+			
 			while(dicomDirReader.readNextDirectoryRecord(patientAttributes)!=null) {
 				
 				patient=new Patient_DicomDir(patientAttributes, dicomDirReader);
+				patients.add(patient);
 				
 			}
-			
-			
-			
-			//readLevelsDirectoryDicomDir(patient,dicomDirReader,patientAttributes);
-
-
-			
-
 	
 			dicomDirReader.close();
 			
@@ -176,40 +172,6 @@ public class Image_Reader {
 
 	}
 	
-	
-	/*
-	private HashMap<Integer, ArrayList<Attributes>> readLevelsDirectoryDicomDir(Patient_DicomDir patient, DicomDirReader dicomDirReader,Attributes current) throws IOException {
-		
-		HashMap<Integer, ArrayList<Attributes>> attributes=new HashMap<Integer, ArrayList<Attributes>>();
-		
-		attributes.put(0, readLevel(dicomDirReader,current));
-		
-		
-		
-		int i=1;
-		while(dicomDirReader.readLowerDirectoryRecord(current)!=null) {
-			current=dicomDirReader.readLowerDirectoryRecord(current);
-			
-			ArrayList<Attributes>  levels=readLevel(dicomDirReader, current);
-			
-			if(i==1) {
-				for(Attributes levelAttribute : levels) {
-					patient.addStudiesAttributes(levelAttribute);
-					Image_Reader.readLevel(dicomDirReader, levelAttribute);
-				}
-				patient.addStudiesAttributes(studyAttributes);
-				
-			}else if(i==2) {
-				
-			}else if(i==3) {
-				
-			}
-			attributes.put(i, level);
-			
-		}
-		return attributes;
-	}
-	*/
 	
 	public static ArrayList<Attributes> getLowerDirectory(DicomDirReader dicomDirReader,Attributes current) {
 		ArrayList<Attributes> lowerResults=null;
@@ -223,6 +185,7 @@ public class Image_Reader {
 		
 		return lowerResults;
 	}
+	
 	/**
 	 * Return array list of attributes of a given level (patient / study / series/ Instances)
 	 * @param dicomDirReader
@@ -230,7 +193,7 @@ public class Image_Reader {
 	 * @return
 	 * @throws IOException
 	 */
-	public static ArrayList<Attributes> readLevel(DicomDirReader dicomDirReader,Attributes current) throws IOException {
+	private static ArrayList<Attributes> readLevel(DicomDirReader dicomDirReader,Attributes current) throws IOException {
 		
 		ArrayList<Attributes> attributsLevel=new ArrayList<Attributes>();
 		
