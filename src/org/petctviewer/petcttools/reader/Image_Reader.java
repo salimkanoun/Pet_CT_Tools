@@ -3,10 +3,15 @@ package org.petctviewer.petcttools.reader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.dcm4che3.data.Attributes;
+import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
+import org.petctviewer.petcttools.reader.dicomdir.Patient_DicomDir;
+
+import com.itextpdf.text.List;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -25,6 +30,11 @@ public class Image_Reader {
 		
 		this.path=path;
 		readPath();
+		
+	}
+	
+	public Image_Reader(Boolean nothing) {
+	
 		
 	}
 	
@@ -131,29 +141,33 @@ public class Image_Reader {
 		return stack2;
 	}
 	
-	public static void readDicomDir(File dicomDir) {
+	public void readDicomDir(File dicomDir) {
 
 		dicomDir=new File("/home/salim/DICOMDIR/dicom/DICOMDIR");
 		
 		try {
 			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
 			
-			//Attributes dcmDirAttributes=dicomDirReader.getFileMetaInformation();
-			//Attributes dcmDirAttributes2=dicomDirReader.getFileSetInformation();
 			
-			//System.out.println(dcmDirAttributes);
-			//System.out.println(dcmDirAttributes2);
-			Attributes last=dicomDirReader.readFirstRootDirectoryRecord();
-			//last=dicomDirReader.readLastRootDirectoryRecord();
-			//System.out.println(last);
-			dicomDirReader.readNextDirectoryRecord(last);
-			while(dicomDirReader.readNextDirectoryRecord(last)!= null) {
-				last=readLowerDirectoryDicomDir(dicomDirReader,last);
+			Attributes patientAttributes=dicomDirReader.readFirstRootDirectoryRecord();
+			
+			Patient_DicomDir patient=new Patient_DicomDir(patientAttributes,dicomDirReader);
+			
+			while(dicomDirReader.readNextDirectoryRecord(patientAttributes)!=null) {
+				
+				patient=new Patient_DicomDir(patientAttributes, dicomDirReader);
+				
 			}
+			
+			
+			
+			//readLevelsDirectoryDicomDir(patient,dicomDirReader,patientAttributes);
+
+
+			
+
 	
 			dicomDirReader.close();
-			//System.out.println(dcmDirAttributes);
-			//System.out.println(dcmDirAttributes2);
 			
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -162,20 +176,78 @@ public class Image_Reader {
 
 	}
 	
-	private static Attributes readLowerDirectoryDicomDir(DicomDirReader dicomDirReader, Attributes current) throws IOException {
+	
+	/*
+	private HashMap<Integer, ArrayList<Attributes>> readLevelsDirectoryDicomDir(Patient_DicomDir patient, DicomDirReader dicomDirReader,Attributes current) throws IOException {
 		
+		HashMap<Integer, ArrayList<Attributes>> attributes=new HashMap<Integer, ArrayList<Attributes>>();
+		
+		attributes.put(0, readLevel(dicomDirReader,current));
+		
+		
+		
+		int i=1;
 		while(dicomDirReader.readLowerDirectoryRecord(current)!=null) {
-			System.out.println("lower");
 			current=dicomDirReader.readLowerDirectoryRecord(current);
-			System.out.println(current);
+			
+			ArrayList<Attributes>  levels=readLevel(dicomDirReader, current);
+			
+			if(i==1) {
+				for(Attributes levelAttribute : levels) {
+					patient.addStudiesAttributes(levelAttribute);
+					Image_Reader.readLevel(dicomDirReader, levelAttribute);
+				}
+				patient.addStudiesAttributes(studyAttributes);
+				
+			}else if(i==2) {
+				
+			}else if(i==3) {
+				
+			}
+			attributes.put(i, level);
 			
 		}
-		System.out.println("end");
-		return current;
+		return attributes;
+	}
+	*/
+	
+	public static ArrayList<Attributes> getLowerDirectory(DicomDirReader dicomDirReader,Attributes current) {
+		ArrayList<Attributes> lowerResults=null;
+		try {
+			Attributes temp = dicomDirReader.readLowerDirectoryRecord(current);
+			lowerResults=Image_Reader.readLevel(dicomDirReader, temp);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return lowerResults;
+	}
+	/**
+	 * Return array list of attributes of a given level (patient / study / series/ Instances)
+	 * @param dicomDirReader
+	 * @param current
+	 * @return
+	 * @throws IOException
+	 */
+	public static ArrayList<Attributes> readLevel(DicomDirReader dicomDirReader,Attributes current) throws IOException {
+		
+		ArrayList<Attributes> attributsLevel=new ArrayList<Attributes>();
+		
+		attributsLevel.add(current);
+		while(dicomDirReader.readNextDirectoryRecord(current)!= null) {
+			current=dicomDirReader.readNextDirectoryRecord(current);
+			attributsLevel.add(current);
+		}
+		
+		return attributsLevel;
 	}
 	
+	
+	
 	public static void main(String[] args) {
-		Image_Reader.readDicomDir(null);
+		Image_Reader reader=new Image_Reader(true);
+		reader.readDicomDir(null);
 		
 		
 	}
