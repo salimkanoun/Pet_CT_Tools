@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
-import org.petctviewer.petcttools.reader.Image_Reader;
 
 public class Study_DicomDir {
 	
@@ -21,7 +20,7 @@ public class Study_DicomDir {
 	
 	public void fillSeriesAttributes() {
 		
-		ArrayList<Attributes> series=Image_Reader.readLowerDirectoryDicomDir(reader,studyAttributes);
+		ArrayList<Attributes> series=Patient_DicomDir.readLowerDirectoryDicomDir(reader,studyAttributes);
 		for(Attributes serie:series) {
 			addSeriesAttributes(serie);
 		}

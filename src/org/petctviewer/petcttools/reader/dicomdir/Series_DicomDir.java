@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
-import org.petctviewer.petcttools.reader.Image_Reader;
 
 public class Series_DicomDir{
 	
@@ -21,7 +20,7 @@ public class Series_DicomDir{
 	
 	public void fillInstancesAttributes() {
 		
-		ArrayList<Attributes> instances=Image_Reader.readLowerDirectoryDicomDir(reader,serieAttributes);
+		ArrayList<Attributes> instances=Patient_DicomDir.readLowerDirectoryDicomDir(reader,serieAttributes);
 		for(Attributes instance:instances) {
 			addInstancesAttributes(instance);
 		}
@@ -48,7 +47,7 @@ public class Series_DicomDir{
 	}
 	
 	public String getSopClassUID() {
-		return serieAttributes.getString(Tag.SOPClassUID);
+		return instances.get(0).instanceAttributes.getString(Tag.ReferencedSOPClassUIDInFile);
 	}
 	
 	public int getNumberOfImages() {

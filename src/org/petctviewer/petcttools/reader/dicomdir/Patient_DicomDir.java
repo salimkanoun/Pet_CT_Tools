@@ -1,11 +1,11 @@
 package org.petctviewer.petcttools.reader.dicomdir;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
-import org.petctviewer.petcttools.reader.Image_Reader;
 
 public class Patient_DicomDir {
 	
@@ -23,7 +23,7 @@ public class Patient_DicomDir {
 	
 	public void fillStudiesAttributes() {
 		
-		ArrayList<Attributes> studies=Image_Reader.readLowerDirectoryDicomDir(reader,patientAttributes);
+		ArrayList<Attributes> studies=Patient_DicomDir.readLowerDirectoryDicomDir(reader,patientAttributes);
 		for(Attributes study:studies) {
 			addStudiesAttributes(study);
 		}
@@ -43,6 +43,26 @@ public class Patient_DicomDir {
 	
 	public String getPatientId() {
 		return patientAttributes.getString(Tag.PatientID);
+	}
+
+	public static ArrayList<Attributes> readLowerDirectoryDicomDir(DicomDirReader dicomDirReader,Attributes current) {
+		ArrayList<Attributes> lowerResults=new ArrayList<Attributes>();
+		try {
+			Attributes temp = dicomDirReader.readLowerDirectoryRecord(current);
+			lowerResults.add(temp);
+			
+			while(dicomDirReader.readNextDirectoryRecord(temp)!= null) {
+				temp=dicomDirReader.readNextDirectoryRecord(temp);
+				lowerResults.add(temp);
+			}
+			
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return lowerResults;
 	}
 
 

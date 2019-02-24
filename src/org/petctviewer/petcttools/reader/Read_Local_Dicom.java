@@ -2,7 +2,6 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,24 +10,38 @@ import javax.swing.JButton;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.io.DicomInputStream;
+import org.dcm4che3.media.DicomDirReader;
+import org.petctviewer.petcttools.reader.dicomdir.Patient_DicomDir;
+import org.petctviewer.petcttools.reader.dicomdir.Series_DicomDir;
+import org.petctviewer.petcttools.reader.dicomdir.Study_DicomDir;
 
 public class Read_Local_Dicom {
 	
-	ArrayList<File> folderList;
-	HashMap<File, Series_Details> dicomMap;
+	HashMap<String, ArrayList<Series_Details>> dicomMap;
 	File folderToRead;
 	JButton buttonScann;
 	
 	public void scanFolder(File folderToRead, JButton buttonScann) {
 		this.folderToRead=folderToRead;
 		this.buttonScann=buttonScann;
-		folderList=new ArrayList<File>();
-		dicomMap=new HashMap<File, Series_Details>();
+		dicomMap=new HashMap<String,  ArrayList<Series_Details>>();;
 		recursiveScanFolder(folderToRead);
 		
 	}
 	
 	private void recursiveScanFolder(File folder) {
+		
+		File[] fileDicomDir = folder.listFiles(new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
+		        return (name.toLowerCase().equals("dicomdir") );
+		    }
+		});
+		
+		if(fileDicomDir.length==1) {
+			readDicomDir(fileDicomDir[0]);
+			return;
+			
+		}
 
 		String[] directories = folder.list(new FilenameFilter() {
 			  @Override
@@ -73,17 +86,14 @@ public class Read_Local_Dicom {
 				String modality=meta2.getString(Tag.Modality);
 				String sopClassUID=meta2.getString(Tag.SOPClassUID);
 				
-				Series_Details details=new Series_Details(ts, patientName, patientId, accessionNumber, studyUID, studyDescription,
+				Series_Details seriesDetails=new Series_Details(ts, patientName, patientId, accessionNumber, studyUID, studyDescription,
 						studyDate, serieDescription, serieNumber, modality, numberOfImage, sopClassUID, files[0].getParentFile());
 				
-				dicomMap.put(files[0].getParentFile(), 
-						details);
 				
+				addToDicomMap(studyUID, seriesDetails);
+				//dicomMap.put(studyUID, seriesDetails);
 				buttonScann.setText("Scanned "+dicomMap.size()+" Series");
-
-
-			//Add found folder in the arrayList of folder that can be opened
-			folderList.add(files[0].getParentFile());
+				
 			
 		}else if(directories.length>0) {
 			for(String directory:directories) {
@@ -93,6 +103,90 @@ public class Read_Local_Dicom {
 		}
 		
 		
+	}
+	
+	private void addToDicomMap(String studyUID, Series_Details seriesDetails) {
+		if(!dicomMap.containsKey(studyUID)) {
+			dicomMap.put(studyUID, new ArrayList<Series_Details>());
+		}
+		
+		dicomMap.get(studyUID).add(seriesDetails);
+		
+	}
+	
+	
+	public void readDicomDir(File dicomDir) {
+
+		ArrayList<Patient_DicomDir> patients=new ArrayList<Patient_DicomDir>();
+		
+		Attributes globalMetadata=null;
+		
+		try {
+			
+			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
+			
+			globalMetadata=dicomDirReader.getFileMetaInformation();
+			
+			
+						
+			Attributes patientAttributes=dicomDirReader.readFirstRootDirectoryRecord();
+			
+			Patient_DicomDir patient=new Patient_DicomDir(patientAttributes,dicomDirReader);
+			
+			patients.add(patient);
+			
+			while(dicomDirReader.readNextDirectoryRecord(patientAttributes)!=null) {
+				
+				patient=new Patient_DicomDir(patientAttributes, dicomDirReader);
+				patients.add(patient);
+				
+			}
+	
+			dicomDirReader.close();
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		for(Patient_DicomDir patient:patients) {
+			
+			String transfertSyntax=globalMetadata.getString(Tag.TransferSyntaxUID);
+			
+			String patientName=patient.getPatientName();
+			String patientId=patient.getPatientId();
+			
+			for(Study_DicomDir study:patient.studies) {
+				
+				String accessionNumber=study.getAccessionNumber();
+				String studyDescription=study.getStudyDescription();
+				String studyDate=study.getStudyDate();
+				String studyUID=study.getStudyUID();
+
+				for(Series_DicomDir serie:study.series) {
+					
+					String modality=serie.getModality();
+					int numberOfImage=serie.getNumberOfImages();
+					String serieDescription=serie.getSerieDescription();
+					String serieNumber=serie.getSerieNumber();
+					String sopClassUID=serie.getSopClassUID();
+					
+					Series_Details seriesDetails=new Series_Details(transfertSyntax, patientName, patientId,
+							accessionNumber, studyUID, studyDescription,
+							studyDate, serieDescription, serieNumber, modality, String.valueOf(numberOfImage), 
+							sopClassUID, null);
+					
+					addToDicomMap(studyUID, seriesDetails);
+					
+					
+				}
+				
+			}
+			
+		}
+		
+		System.out.println("fin dcmdir");
+
 	}
 	
 	

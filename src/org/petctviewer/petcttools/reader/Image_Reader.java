@@ -2,18 +2,7 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.dcm4che3.data.Attributes;
-import org.dcm4che3.data.Tag;
-import org.dcm4che3.media.DicomDirReader;
-import org.petctviewer.petcttools.reader.dicomdir.Patient_DicomDir;
-import org.petctviewer.petcttools.reader.dicomdir.Series_DicomDir;
-import org.petctviewer.petcttools.reader.dicomdir.Study_DicomDir;
-
-import com.itextpdf.text.List;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -29,15 +18,8 @@ public class Image_Reader {
 	private ImagePlus image;
 	
 	public Image_Reader(File path) {
-		
 		this.path=path;
 		readPath();
-		
-	}
-	
-	public Image_Reader(Boolean nothing) {
-	
-		
 	}
 	
 	private void readPath() {
@@ -143,93 +125,7 @@ public class Image_Reader {
 		return stack2;
 	}
 	
-	public void readDicomDir(File dicomDir) {
-
-		dicomDir=new File("/home/salim/DICOMDIR/dicom/DICOMDIR");
-		
-		ArrayList<Patient_DicomDir> patients=new ArrayList<Patient_DicomDir>();
-		
-		try {
-			
-			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
-			
-			Attributes globalMetadata=dicomDirReader.getFileMetaInformation();
-						
-			Attributes patientAttributes=dicomDirReader.readFirstRootDirectoryRecord();
-			
-			Patient_DicomDir patient=new Patient_DicomDir(patientAttributes,dicomDirReader);
-			
-			patients.add(patient);
-			
-			while(dicomDirReader.readNextDirectoryRecord(patientAttributes)!=null) {
-				
-				patient=new Patient_DicomDir(patientAttributes, dicomDirReader);
-				patients.add(patient);
-				
-			}
-	
-			dicomDirReader.close();
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		for(Patient_DicomDir patient:patients) {
-			
-			System.out.println(patient.getPatientName());
-			System.out.println(patient.getPatientId());
-			
-			for(Study_DicomDir study:patient.studies) {
-				
-				System.out.println(study.getStudyDescription());
-				System.out.println(study.getStudyDate());
-				System.out.println(study.getStudyUID());
-
-				for(Series_DicomDir serie:study.series) {
-					
-					System.out.println(serie.getModality());
-					System.out.println(serie.getNumberOfImages());
-					System.out.println(serie.getSerieDescription());
-					System.out.println(serie.getSerieNumber());
-					System.out.println(serie.getSopClassUID());
-					
-				}
-				
-			}
-			
-		}
-
-	}
 	
 	
-	public static ArrayList<Attributes> readLowerDirectoryDicomDir(DicomDirReader dicomDirReader,Attributes current) {
-		ArrayList<Attributes> lowerResults=new ArrayList<Attributes>();
-		try {
-			Attributes temp = dicomDirReader.readLowerDirectoryRecord(current);
-			lowerResults.add(temp);
-			
-			while(dicomDirReader.readNextDirectoryRecord(temp)!= null) {
-				temp=dicomDirReader.readNextDirectoryRecord(temp);
-				lowerResults.add(temp);
-			}
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return lowerResults;
-	}
-	
-	
-	
-	public static void main(String[] args) {
-		Image_Reader reader=new Image_Reader(true);
-		reader.readDicomDir(null);
-		
-		
-	}
 
 }

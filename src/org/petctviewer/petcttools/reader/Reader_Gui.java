@@ -272,24 +272,24 @@ public class Reader_Gui extends JFrame {
 	 * Build a map of study sorted by studyUID, will be used to fill the study/serie table
 	 * @param seriesMap
 	 */
-	private void setHashMap(HashMap<File, Series_Details> seriesMap) {
+	private void setHashMap(HashMap<String, ArrayList<Series_Details>> seriesMap) {
 		
-		HashMap<String, ArrayList<Series_Details>> studyMap=new HashMap<String, ArrayList<Series_Details>>();
+		//HashMap<String, ArrayList<Series_Details>> studyMap=new HashMap<String, ArrayList<Series_Details>>();
 		
-		for(File directory : seriesMap.keySet()) {
+		/*for(String studyUID : seriesMap.keySet()) {
 			
-			if(!studyMap.containsKey(seriesMap.get(directory).studyUID)) {
-				studyMap.put(seriesMap.get(directory).studyUID, new ArrayList<Series_Details>());
+			if(!studyMap.containsKey(seriesMap.get(studyUID).studyUID)) {
+				studyMap.put(seriesMap.get(studyUID).studyUID, new ArrayList<Series_Details>());
 				
 			}
 			
-			studyMap.get(seriesMap.get(directory).studyUID).add(seriesMap.get(directory));
+			studyMap.get(seriesMap.get(studyUID).studyUID).add(seriesMap.get(studyUID));
 			
 			
 			
-		}
+		}*/
 		
-		updateSerieTable(studyMap);
+		updateSerieTable(seriesMap);
 		
 	}
 	
