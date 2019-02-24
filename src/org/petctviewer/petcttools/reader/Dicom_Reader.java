@@ -30,6 +30,9 @@ public class Dicom_Reader implements PlugIn{
 
 	//SK To DO
 	//DICOM DIR=> A tester
+	//Supression des DICOMDIR ?
+	//Nom des Images
+	//Lancement auto du viewer
 	//Renderer Selection
 	//Read All Study ?
 	//Compressed DICOM?
