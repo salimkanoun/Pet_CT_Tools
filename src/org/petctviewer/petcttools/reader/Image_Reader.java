@@ -41,7 +41,6 @@ public class Image_Reader {
 		Calibration calibration=null;
 		
 		for (File file: files) {
-			System.out.println(file);
 			ImagePlus slice=this.readFile(file);
 			if(stack==null) {
 				ImageProcessor ip=slice.getProcessor();
@@ -108,7 +107,6 @@ public class Image_Reader {
 			try {
 				imp.setSlice(i);
 				String imageNumber=DicomTools.getTag(imp, "0020,0013").trim();
-				System.out.println(imageNumber);
 				sliceMap.put(Integer.parseInt(imageNumber), i);	
 			
 			}catch(Exception e1){
