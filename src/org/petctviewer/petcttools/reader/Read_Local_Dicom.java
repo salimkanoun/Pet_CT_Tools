@@ -137,6 +137,7 @@ public class Read_Local_Dicom {
 			
 			while(dicomDirReader.readNextDirectoryRecord(patientAttributes)!=null) {
 				
+				patientAttributes=dicomDirReader.readNextDirectoryRecord(patientAttributes);
 				patient=new Patient_DicomDir(patientAttributes, dicomDirReader);
 				patients.add(patient);
 				
@@ -170,15 +171,13 @@ public class Read_Local_Dicom {
 					String serieDescription=serie.getSerieDescription();
 					String serieNumber=serie.getSerieNumber();
 					String sopClassUID=serie.getSopClassUID();
+					ArrayList<String> fileLocationList=serie.getFileList();
 					
-					
-					//SK FILE A RECUPERER ET  A ADAPTER
-					//PASSER UN BOOLEAN DANS SERIES DETAILS EN CAS DE DICOMDIR
-					//LECTURE A ADAPTER
 					Series_Details seriesDetails=new Series_Details(transfertSyntax, patientName, patientId,
 							accessionNumber, studyUID, studyDescription,
 							studyDate, serieDescription, serieNumber, modality, String.valueOf(numberOfImage), 
-							sopClassUID, new File("a"));
+							sopClassUID, null);
+					seriesDetails.setDicomDir(dicomDir.getParent(),fileLocationList);
 					
 					addToDicomMap(studyUID, seriesDetails);
 					

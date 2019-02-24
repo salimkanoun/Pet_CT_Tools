@@ -90,7 +90,7 @@ public class Reader_Gui extends JFrame {
 					protected Void doInBackground() throws Exception {
 						Read_Local_Dicom reader= new Read_Local_Dicom();
 						reader.scanFolder(new File(path), btnScanFolder);
-						gui.setHashMap(reader.dicomMap);
+						updateSerieTable(reader.dicomMap);
 						gui.pack();
 						return null;
 					}
@@ -152,12 +152,28 @@ public class Reader_Gui extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				//SK SWING WORKER ICI
 				if(tableSeries.getSelectedRowCount()!=0) {
-					ArrayList<File> folders=new ArrayList<File>();
+					
 					int[] rows=tableSeries.getSelectedRows();
-					for(int row : rows) {
-						folders.add((File) tableSeries.getValueAt(row, 4));
+					
+					if(tableSeries.getValueAt(rows[0], 4) instanceof File) {
+						ArrayList<File> folders=new ArrayList<File>();
+						
+						for(int row : rows) {
+							folders.add((File) tableSeries.getValueAt(row, 4));
+						}
+						openFolders(folders);
+						
+					}else if(tableSeries.getValueAt(rows[0], 4) instanceof ArrayList) {
+						
+						for(int row : rows) {
+							ArrayList<File> fileList=(ArrayList<File>) tableSeries.getValueAt(row, 4);
+							Image_Reader reader=new Image_Reader(fileList);
+							ImagePlus image=reader.getImagePlus();
+							image.show();
+						}
+						
 					}
-					openFolders(folders);
+					
 					
 				}
 				
@@ -268,30 +284,6 @@ public class Reader_Gui extends JFrame {
 		
 	}
 	
-	/**
-	 * Build a map of study sorted by studyUID, will be used to fill the study/serie table
-	 * @param seriesMap
-	 */
-	private void setHashMap(HashMap<String, ArrayList<Series_Details>> seriesMap) {
-		
-		//HashMap<String, ArrayList<Series_Details>> studyMap=new HashMap<String, ArrayList<Series_Details>>();
-		
-		/*for(String studyUID : seriesMap.keySet()) {
-			
-			if(!studyMap.containsKey(seriesMap.get(studyUID).studyUID)) {
-				studyMap.put(seriesMap.get(studyUID).studyUID, new ArrayList<Series_Details>());
-				
-			}
-			
-			studyMap.get(seriesMap.get(studyUID).studyUID).add(seriesMap.get(studyUID));
-			
-			
-			
-		}*/
-		
-		updateSerieTable(seriesMap);
-		
-	}
 	
 	/**
 	 * Update the study tabel with the scann results
@@ -304,13 +296,26 @@ public class Reader_Gui extends JFrame {
 			
 			ArrayList<Series_Details> details=studyMap.get(studyUID);
 			
-			modelStudy.addRow(new Object[] {details.get(0).patientName,
-					details.get(0).patientId,
-					details.get(0).studyDate,
-					details.get(0).studyDescription,
-					details.get(0).accessionNumber,
-					details.get(0).fileLocation.getParentFile(),
-					details});
+			if(details.get(0).isDicomDir) {
+				modelStudy.addRow(new Object[] {details.get(0).patientName,
+						details.get(0).patientId,
+						details.get(0).studyDate,
+						details.get(0).studyDescription,
+						details.get(0).accessionNumber,
+						null,
+						details});
+				
+			}else {
+				modelStudy.addRow(new Object[] {details.get(0).patientName,
+						details.get(0).patientId,
+						details.get(0).studyDate,
+						details.get(0).studyDescription,
+						details.get(0).accessionNumber,
+						details.get(0).fileLocation.getParentFile(),
+						details});
+				
+			}
+			
 			
 		}
 		

@@ -2,6 +2,7 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import ij.ImagePlus;
@@ -14,18 +15,10 @@ import loci.plugins.BF;
 
 public class Image_Reader {
 	
-	private File path;
+
 	private ImagePlus image;
 	
 	public Image_Reader(File path) {
-		this.path=path;
-		readPath();
-	}
-	
-	private void readPath() {
-		
-		ImageStack stack = null;
-		Calibration calibration=null;
 		
 		File[] files = path.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
@@ -33,7 +26,23 @@ public class Image_Reader {
 		    }
 		});
 		
+		readFiles(files);
+	}
+	
+	public Image_Reader(ArrayList<File> files) {
+		File[] fileArray=new File[files.size()];
+		files.toArray(fileArray);
+		readFiles(fileArray);
+	}
+	
+	
+	private void readFiles(File[] files) {
+		
+		ImageStack stack = null;
+		Calibration calibration=null;
+		
 		for (File file: files) {
+			System.out.println(file);
 			ImagePlus slice=this.readFile(file);
 			if(stack==null) {
 				ImageProcessor ip=slice.getProcessor();
@@ -57,7 +66,6 @@ public class Image_Reader {
 		imp2.setCalibration(calibration);
 		
 		image=imp2;
-		
 		
 	}
 	

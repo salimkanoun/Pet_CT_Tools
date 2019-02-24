@@ -1,7 +1,9 @@
 package org.petctviewer.petcttools.reader.dicomdir;
 
+import java.io.File;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
@@ -53,6 +55,16 @@ public class Series_DicomDir{
 	
 	public int getNumberOfImages() {
 		return instances.size();
+	}
+	
+	public ArrayList<String> getFileList() {
+		ArrayList<String> relativePath=new ArrayList<String>();
+		for(Instances_DicomDir instance:instances) {
+			String[] referenceFile=instance.instanceAttributes.getStrings(Tag.ReferencedFileID);
+			String file=String.join(File.separator, referenceFile);
+			relativePath.add(file);
+		}
+		return relativePath;
 	}
 	
 	

@@ -2,6 +2,7 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -26,6 +27,8 @@ public class Series_Details {
 	String sopClassUID;
 	String imageType;
 	File fileLocation;
+	boolean isDicomDir=false;
+	ArrayList<File> fileLocationList;
 	
 	/**
 	 * 
@@ -85,6 +88,20 @@ public class Series_Details {
 		determineIsCompressed();
 		
 		
+	}
+	
+	public void setDicomDir(String rootPath, ArrayList<String> fileLocationList) {
+		this.isDicomDir=true;
+		this.fileLocationList=new ArrayList<File>();
+		
+		for(String file : fileLocationList) {
+			System.out.println(rootPath+File.separator+file);
+			this.fileLocationList.add(new File(rootPath+File.separator+file));
+		}
+		
+		
+		
+	
 	}
 	
 	private void determineImageType() {

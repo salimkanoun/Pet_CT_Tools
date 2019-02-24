@@ -8,7 +8,6 @@ public class Instances_DicomDir{
 	
 	public Instances_DicomDir(Attributes instanceAttributes) {
 		this.instanceAttributes=instanceAttributes;
-		System.out.println(instanceAttributes);
 		
 		
 	}
