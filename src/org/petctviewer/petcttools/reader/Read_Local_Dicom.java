@@ -171,10 +171,14 @@ public class Read_Local_Dicom {
 					String serieNumber=serie.getSerieNumber();
 					String sopClassUID=serie.getSopClassUID();
 					
+					
+					//SK FILE A RECUPERER ET  A ADAPTER
+					//PASSER UN BOOLEAN DANS SERIES DETAILS EN CAS DE DICOMDIR
+					//LECTURE A ADAPTER
 					Series_Details seriesDetails=new Series_Details(transfertSyntax, patientName, patientId,
 							accessionNumber, studyUID, studyDescription,
 							studyDate, serieDescription, serieNumber, modality, String.valueOf(numberOfImage), 
-							sopClassUID, null);
+							sopClassUID, new File("a"));
 					
 					addToDicomMap(studyUID, seriesDetails);
 					
