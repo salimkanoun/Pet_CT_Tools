@@ -6,6 +6,12 @@ import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
 
+/**
+ * Stores Attributes of study Entry of DICOMDIR
+ * Fetch the series Level to get child series
+ * @author salim
+ *
+ */
 public class Study_DicomDir {
 	
 	public Attributes studyAttributes;
@@ -19,18 +25,15 @@ public class Study_DicomDir {
 	}
 	
 	public void fillSeriesAttributes() {
-		
 		ArrayList<Attributes> series=Patient_DicomDir.readLowerDirectoryDicomDir(reader,studyAttributes);
 		for(Attributes serie:series) {
 			addSeriesAttributes(serie);
 		}
-		
 	}
 	
 	public void addSeriesAttributes(Attributes serieAttributes) {
 			Series_DicomDir serie = new Series_DicomDir(serieAttributes, reader);
 			series.add(serie);
-		
 	}
 	
 	public String getAccessionNumber() {

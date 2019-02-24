@@ -17,12 +17,10 @@ import org.petctviewer.petcttools.reader.dicomdir.Study_DicomDir;
 
 public class Read_Local_Dicom {
 	
-	HashMap<String, ArrayList<Series_Details>> dicomMap;
-	File folderToRead;
-	JButton buttonScann;
+	public HashMap<String, ArrayList<Series_Details>> dicomMap;
+	private JButton buttonScann;
 	
 	public void scanFolder(File folderToRead, JButton buttonScann) {
-		this.folderToRead=folderToRead;
 		this.buttonScann=buttonScann;
 		dicomMap=new HashMap<String,  ArrayList<Series_Details>>();;
 		recursiveScanFolder(folderToRead);
@@ -118,19 +116,13 @@ public class Read_Local_Dicom {
 	public void readDicomDir(File dicomDir) {
 
 		ArrayList<Patient_DicomDir> patients=new ArrayList<Patient_DicomDir>();
-		
 		Attributes globalMetadata=null;
 		
 		try {
 			
 			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
-			
-			globalMetadata=dicomDirReader.getFileMetaInformation();
-			
-			
-						
+			globalMetadata=dicomDirReader.getFileMetaInformation();		
 			Attributes patientAttributes=dicomDirReader.readFirstRootDirectoryRecord();
-			
 			Patient_DicomDir patient=new Patient_DicomDir(patientAttributes,dicomDirReader);
 			
 			patients.add(patient);
@@ -150,6 +142,7 @@ public class Read_Local_Dicom {
 			e.printStackTrace();
 		}
 		
+		//Processing result to creat and File Series_Details object that will be sent to GUI
 		for(Patient_DicomDir patient:patients) {
 			
 			String transfertSyntax=globalMetadata.getString(Tag.TransferSyntaxUID);
@@ -187,15 +180,7 @@ public class Read_Local_Dicom {
 			}
 			
 		}
-		
-		System.out.println("fin dcmdir");
 
-	}
-	
-	
-	
-	
-	
-	
+	}	
 
 }

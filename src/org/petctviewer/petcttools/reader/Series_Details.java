@@ -12,23 +12,23 @@ import java.util.Date;
  */
 public class Series_Details {
 	
-	String transferSyntax;
-	boolean isCompressed;
-	String patientName;
-	String patientId;
-	String accessionNumber;
-	String studyUID;
-	String studyDescription;
-	Date studyDate;
-	String serieDescription;
-	String serieNumber="N/A";
-	int numberOfImage;
-	String modality;
-	String sopClassUID;
-	String imageType;
-	File fileLocation;
-	boolean isDicomDir=false;
-	ArrayList<File> fileLocationList;
+	public String transferSyntax;
+	public boolean isCompressed;
+	public String patientName;
+	public String patientId;
+	public String accessionNumber;
+	public String studyUID;
+	public String studyDescription;
+	public Date studyDate;
+	public String serieDescription;
+	public String serieNumber="N/A";
+	public int numberOfImage;
+	public String modality;
+	public String sopClassUID;
+	public String imageType;
+	public File fileLocation;
+	public boolean isDicomDir=false;
+	public ArrayList<File> fileLocationList;
 	
 	/**
 	 * 
@@ -90,18 +90,19 @@ public class Series_Details {
 		
 	}
 	
+	/***
+	 * Flag this Series as DICOMDIR and store Instance location in this object as arrayList of File
+	 * @param rootPath
+	 * @param fileLocationList
+	 */
 	public void setDicomDir(String rootPath, ArrayList<String> fileLocationList) {
 		this.isDicomDir=true;
 		this.fileLocationList=new ArrayList<File>();
 		
 		for(String file : fileLocationList) {
-			System.out.println(rootPath+File.separator+file);
 			this.fileLocationList.add(new File(rootPath+File.separator+file));
 		}
 		
-		
-		
-	
 	}
 	
 	private void determineImageType() {

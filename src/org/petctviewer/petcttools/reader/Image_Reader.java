@@ -15,7 +15,6 @@ import loci.plugins.BF;
 
 public class Image_Reader {
 	
-
 	private ImagePlus image;
 	
 	public Image_Reader(File path) {

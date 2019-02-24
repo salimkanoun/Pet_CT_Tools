@@ -1,5 +1,7 @@
 package org.petctviewer.petcttools.reader;
 
+import org.petctviewer.petcttools.reader.gui.Reader_Gui;
+
 public class Dicom_Reader {
 
 	public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package org.petctviewer.petcttools.reader;
+package org.petctviewer.petcttools.reader.gui;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -34,6 +34,9 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.petctviewer.petcttools.reader.Image_Reader;
+import org.petctviewer.petcttools.reader.Read_Local_Dicom;
+import org.petctviewer.petcttools.reader.Series_Details;
 
 import ij.ImagePlus;
 

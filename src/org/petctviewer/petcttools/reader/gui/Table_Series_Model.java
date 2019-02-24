@@ -1,8 +1,10 @@
-package org.petctviewer.petcttools.reader;
+package org.petctviewer.petcttools.reader.gui;
 
 import java.util.ArrayList;
 
 import javax.swing.table.DefaultTableModel;
+
+import org.petctviewer.petcttools.reader.Series_Details;
 
 @SuppressWarnings("serial")
 public class Table_Series_Model extends DefaultTableModel{

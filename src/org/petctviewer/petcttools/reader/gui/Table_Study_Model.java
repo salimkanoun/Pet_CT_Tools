@@ -1,9 +1,11 @@
-package org.petctviewer.petcttools.reader;
+package org.petctviewer.petcttools.reader.gui;
 
 import java.io.File;
 import java.util.Date;
 
 import javax.swing.table.DefaultTableModel;
+
+import org.petctviewer.petcttools.reader.Series_Details;
 
 public class Table_Study_Model extends DefaultTableModel{
 

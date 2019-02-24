@@ -1,4 +1,4 @@
-package org.petctviewer.petcttools.reader;
+package org.petctviewer.petcttools.reader.gui;
 
 import java.awt.Color;
 import java.awt.Component;
