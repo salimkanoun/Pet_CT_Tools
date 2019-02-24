@@ -15,6 +15,7 @@ public class Series_DicomDir{
 	public Series_DicomDir(Attributes serieAttributes, DicomDirReader reader) {
 		this.reader=reader;
 		this.serieAttributes=serieAttributes;
+		//System.out.println(serieAttributes);
 		fillInstancesAttributes();
 	}
 	
