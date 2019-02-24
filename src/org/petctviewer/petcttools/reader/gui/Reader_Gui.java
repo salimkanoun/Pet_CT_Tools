@@ -169,6 +169,7 @@ public class Reader_Gui extends JFrame {
 					}else if(tableSeries.getValueAt(rows[0], 4) instanceof ArrayList) {
 						
 						for(int row : rows) {
+							@SuppressWarnings("unchecked")
 							ArrayList<File> fileList=(ArrayList<File>) tableSeries.getValueAt(row, 4);
 							Image_Reader reader=new Image_Reader(fileList);
 							ImagePlus image=reader.getImagePlus();

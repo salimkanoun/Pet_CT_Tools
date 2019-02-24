@@ -1,6 +1,5 @@
 package org.petctviewer.petcttools.reader.gui;
 
-import java.io.File;
 import java.util.Date;
 
 import javax.swing.table.DefaultTableModel;

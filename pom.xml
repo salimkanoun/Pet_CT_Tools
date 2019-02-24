@@ -103,22 +103,12 @@
 	</dependency>
 	
 	<dependency>
-	    <groupId>org.dcm4che.tool</groupId>
-	    <artifactId>dcm4che-tool-common</artifactId>
-	    <version>5.14.1</version>
-	</dependency>
-	
-	<dependency>
 	    <groupId>org.dcm4che</groupId>
 	    <artifactId>dcm4che-core</artifactId>
 	    <version>5.14.1</version>
 	</dependency>
 	
-	<dependency>
-    <groupId>org.dcm4che</groupId>
-    <artifactId>dcm4che-net</artifactId>
-    <version>5.14.1</version>
-	</dependency>
+
 	
 
   </dependencies>
