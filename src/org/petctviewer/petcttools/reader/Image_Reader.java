@@ -10,6 +10,8 @@ import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.media.DicomDirReader;
 import org.petctviewer.petcttools.reader.dicomdir.Patient_DicomDir;
+import org.petctviewer.petcttools.reader.dicomdir.Series_DicomDir;
+import org.petctviewer.petcttools.reader.dicomdir.Study_DicomDir;
 
 import com.itextpdf.text.List;
 
@@ -148,7 +150,10 @@ public class Image_Reader {
 		ArrayList<Patient_DicomDir> patients=new ArrayList<Patient_DicomDir>();
 		
 		try {
+			
 			DicomDirReader dicomDirReader = new DicomDirReader(dicomDir);
+			
+			Attributes globalMetadata=dicomDirReader.getFileMetaInformation();
 						
 			Attributes patientAttributes=dicomDirReader.readFirstRootDirectoryRecord();
 			
@@ -169,41 +174,53 @@ public class Image_Reader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		for(Patient_DicomDir patient:patients) {
+			
+			System.out.println(patient.getPatientName());
+			System.out.println(patient.getPatientId());
+			
+			for(Study_DicomDir study:patient.studies) {
+				
+				System.out.println(study.getStudyDescription());
+				System.out.println(study.getStudyDate());
+				System.out.println(study.getStudyUID());
+
+				for(Series_DicomDir serie:study.series) {
+					
+					System.out.println(serie.getModality());
+					System.out.println(serie.getNumberOfImages());
+					System.out.println(serie.getSerieDescription());
+					System.out.println(serie.getSerieNumber());
+					System.out.println(serie.getSopClassUID());
+					
+				}
+				
+			}
+			
+		}
 
 	}
 	
 	
-	public static ArrayList<Attributes> getLowerDirectory(DicomDirReader dicomDirReader,Attributes current) {
-		ArrayList<Attributes> lowerResults=null;
+	public static ArrayList<Attributes> readLowerDirectoryDicomDir(DicomDirReader dicomDirReader,Attributes current) {
+		ArrayList<Attributes> lowerResults=new ArrayList<Attributes>();
 		try {
 			Attributes temp = dicomDirReader.readLowerDirectoryRecord(current);
-			lowerResults=Image_Reader.readLevel(dicomDirReader, temp);
+			lowerResults.add(temp);
+			
+			while(dicomDirReader.readNextDirectoryRecord(temp)!= null) {
+				temp=dicomDirReader.readNextDirectoryRecord(temp);
+				lowerResults.add(temp);
+			}
+			
+			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		return lowerResults;
-	}
-	
-	/**
-	 * Return array list of attributes of a given level (patient / study / series/ Instances)
-	 * @param dicomDirReader
-	 * @param current
-	 * @return
-	 * @throws IOException
-	 */
-	private static ArrayList<Attributes> readLevel(DicomDirReader dicomDirReader,Attributes current) throws IOException {
-		
-		ArrayList<Attributes> attributsLevel=new ArrayList<Attributes>();
-		
-		attributsLevel.add(current);
-		while(dicomDirReader.readNextDirectoryRecord(current)!= null) {
-			current=dicomDirReader.readNextDirectoryRecord(current);
-			attributsLevel.add(current);
-		}
-		
-		return attributsLevel;
 	}
 	
 	
