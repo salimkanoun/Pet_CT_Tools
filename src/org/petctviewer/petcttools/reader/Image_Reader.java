@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Scanner;
 
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -47,7 +49,7 @@ public class Image_Reader {
 				stack=new ImageStack(ip.getWidth(), ip.getHeight(), ip.getColorModel());
 				calibration=slice.getCalibration();
 			}
-			
+			System.out.println(slice.getInfoProperty());
 			stack.addSlice(slice.getInfoProperty(),slice.getProcessor());
 			
 		}
@@ -55,6 +57,7 @@ public class Image_Reader {
 		
 		ImagePlus imp=new ImagePlus();
 		imp.setStack(stack);
+		
 		imp.setCalibration(calibration);
 		
 		ImageStack stackSorted=this.sortStack(imp);
@@ -62,6 +65,8 @@ public class Image_Reader {
 		ImagePlus imp2=new ImagePlus();
 		imp2.setStack(stackSorted);
 		imp2.setCalibration(calibration);
+		imp2.setProperty("Info", imp2.getStack().getSliceLabel(1));
+		imp2.setTitle(DicomTools.getTag(imp2, "0010,0010")+"-"+DicomTools.getTag(imp2, "0008,0022")+"-"+DicomTools.getTag(imp2, "0008,103E"));
 		
 		image=imp2;
 		
@@ -119,6 +124,7 @@ public class Image_Reader {
 		if(sliceMap.size() ==imp.getStackSize()) {
 			for(int i=1; i<=imp.getStackSize(); i++){
 				int sliceToadd=sliceMap.get(i);
+				System.out.println(imp.getStack().getSliceLabel(sliceToadd));
 				stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
 			}
 		//Else return original stack	
