@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
-import java.util.Scanner;
 
 import ij.ImagePlus;
 import ij.ImageStack;
