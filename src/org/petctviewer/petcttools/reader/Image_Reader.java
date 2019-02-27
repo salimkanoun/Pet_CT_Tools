@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.io.Opener;
@@ -40,6 +41,7 @@ public class Image_Reader {
 		ImageStack stack = null;
 		Calibration calibration=null;
 		
+		int i=0;
 		for (File file: files) {
 			ImagePlus slice=this.readFile(file);
 			if(stack==null) {
@@ -47,8 +49,9 @@ public class Image_Reader {
 				stack=new ImageStack(ip.getWidth(), ip.getHeight(), ip.getColorModel());
 				calibration=slice.getCalibration();
 			}
-			System.out.println(slice.getInfoProperty());
 			stack.addSlice(slice.getInfoProperty(),slice.getProcessor());
+			i++;
+			IJ.showProgress((double) i/files.length);
 			
 		}
 		

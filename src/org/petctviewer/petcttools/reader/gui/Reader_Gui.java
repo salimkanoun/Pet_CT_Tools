@@ -153,33 +153,47 @@ public class Reader_Gui extends JFrame {
 		JButton btnRead = new JButton("Read");
 		btnRead.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//SK SWING WORKER ICI
-				if(tableSeries.getSelectedRowCount()!=0) {
-					
-					int[] rows=tableSeries.getSelectedRows();
-					
-					if(tableSeries.getValueAt(rows[0], 4) instanceof File) {
-						ArrayList<File> folders=new ArrayList<File>();
-						
-						for(int row : rows) {
-							folders.add((File) tableSeries.getValueAt(row, 4));
+				SwingWorker<Void,Void> worker=new SwingWorker<Void,Void>() {
+
+					@Override
+					protected Void doInBackground() throws Exception {
+						if(tableSeries.getSelectedRowCount()!=0) {
+							int[] rows=tableSeries.getSelectedRows();
+							if(tableSeries.getValueAt(rows[0], 4) instanceof File) {
+								ArrayList<File> folders=new ArrayList<File>();
+								
+								for(int row : rows) {
+									folders.add((File) tableSeries.getValueAt(row, 4));
+								}
+								
+								for(File folder: folders) {
+									Image_Reader reader=new Image_Reader(folder);
+									ImagePlus image=reader.getImagePlus();
+									image.show();
+								}
+								
+							}else if(tableSeries.getValueAt(rows[0], 4) instanceof ArrayList) {
+								
+								for(int row : rows) {
+									@SuppressWarnings("unchecked")
+									ArrayList<File> fileList=(ArrayList<File>) tableSeries.getValueAt(row, 4);
+									Image_Reader reader=new Image_Reader(fileList);
+									ImagePlus image=reader.getImagePlus();
+									image.show();
+								}
+							}
 						}
-						openFolders(folders);
-						
-					}else if(tableSeries.getValueAt(rows[0], 4) instanceof ArrayList) {
-						
-						for(int row : rows) {
-							@SuppressWarnings("unchecked")
-							ArrayList<File> fileList=(ArrayList<File>) tableSeries.getValueAt(row, 4);
-							Image_Reader reader=new Image_Reader(fileList);
-							ImagePlus image=reader.getImagePlus();
-							image.show();
-						}
-						
+						return null;
 					}
 					
+					@Override
+					protected void done() {
+						// TODO Auto-generated method stub
+					}
 					
-				}
+				};
+				worker.execute();
+
 				
 				
 			}
@@ -331,20 +345,6 @@ public class Reader_Gui extends JFrame {
 		((DefaultTableModel) tableSeries.getModel()).setRowCount(0);
 	}
 	
-	/**
-	 * Open DICOMs contained in array list of folders (1 folder = 1 serie)
-	 * @param folders
-	 */
-	private void openFolders(ArrayList<File> folders) {
-		
-		for(File folder: folders) {
-			Image_Reader reader=new Image_Reader(folder);
-			ImagePlus image=reader.getImagePlus();
-			image.show();
-		}
-			
-	}
-		
 	private void storePreference(int position, String path) {
 		jPrefer.put("path"+position, path);
 	}
@@ -376,18 +376,23 @@ public class Reader_Gui extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				File directory=(File) table.getValueAt(table.getSelectedRow(), table.getColumnCount()-2);
-				int response=JOptionPane.showConfirmDialog(gui, "File Will Be Erased, This can't be undone !", "Definitive Erase", JOptionPane.WARNING_MESSAGE);
-				if(response==JOptionPane.YES_OPTION) {
-					try {
-						FileUtils.deleteDirectory(directory);
-						btnScanFolder.doClick();
-					} catch (IOException e) {
-						e.printStackTrace();
+				
+				Object directory=table.getValueAt(table.getSelectedRow(), table.getColumnCount()-2);
+				
+				if(directory instanceof File) {
+					int response=JOptionPane.showConfirmDialog(gui, "File Will Be Erased, This can't be undone !", "Definitive Erase", JOptionPane.WARNING_MESSAGE);
+					if(response==JOptionPane.YES_OPTION) {
+						try {
+							FileUtils.deleteDirectory((File) directory);
+							btnScanFolder.doClick();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}	
 					}
+				}else {
+					JOptionPane.showMessageDialog(gui, "DICOMDIR structure can't be deleted safly", "DICOMDIR", JOptionPane.ERROR_MESSAGE);
 					
 				}
-
 				
 			}
 			
