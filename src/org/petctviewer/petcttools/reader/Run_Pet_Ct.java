@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 import ij.IJ;
@@ -8,7 +9,6 @@ public class Run_Pet_Ct {
 	
 	
 	public Run_Pet_Ct(ArrayList<ImagePlus> imagePlusList) {
-		System.out.println(ChoosePetCt.BLACK_BKGD);
 		String seriesUIDs = ChoosePetCt.buildSeriesUIDs(imagePlusList);
 		if( seriesUIDs == null) return;
 		if( seriesUIDs.startsWith("2CTs")) seriesUIDs = "";
