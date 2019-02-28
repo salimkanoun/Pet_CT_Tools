@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.prefs.Preferences;
@@ -154,21 +155,28 @@ public class Reader_Gui extends JFrame {
 		btnRead.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				SwingWorker<Void,Void> worker=new SwingWorker<Void,Void>() {
+					
+					boolean ct, pet=false;
 
 					@Override
 					protected Void doInBackground() throws Exception {
 						if(tableSeries.getSelectedRowCount()!=0) {
 							int[] rows=tableSeries.getSelectedRows();
+							ArrayList<ImagePlus> imagesPlus=new ArrayList<ImagePlus>();
+							
 							if(tableSeries.getValueAt(rows[0], 4) instanceof File) {
 								ArrayList<File> folders=new ArrayList<File>();
 								
 								for(int row : rows) {
 									folders.add((File) tableSeries.getValueAt(row, 4));
+									ctOrPet(tableSeries.getValueAt(row, 1).toString());
+									
 								}
 								
 								for(File folder: folders) {
 									Image_Reader reader=new Image_Reader(folder);
 									ImagePlus image=reader.getImagePlus();
+									imagesPlus.add(image);
 									image.show();
 								}
 								
@@ -177,15 +185,44 @@ public class Reader_Gui extends JFrame {
 								for(int row : rows) {
 									@SuppressWarnings("unchecked")
 									ArrayList<File> fileList=(ArrayList<File>) tableSeries.getValueAt(row, 4);
+									ctOrPet(tableSeries.getValueAt(row, 1).toString());
 									Image_Reader reader=new Image_Reader(fileList);
 									ImagePlus image=reader.getImagePlus();
+									imagesPlus.add(image);
 									image.show();
 								}
+							}
+							
+							if(ct && pet) {
+								Class Run_Pet_Ct = null;
+								try {
+									Run_Pet_Ct = Class.forName("Run_Pet_Ct");
+								} catch (ClassNotFoundException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								try {
+									Constructor cs=Run_Pet_Ct.getDeclaredConstructor(ArrayList.class);
+									cs.newInstance(imagesPlus);
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} 
 							}
 						}
 						return null;
 					}
 					
+					private void ctOrPet(String modality) {
+						
+						if (modality.equals("CT")) {
+							ct=true;
+						};
+						if (modality.equals("PT")) {
+							pet=true;
+						};
+						
+					}
 					@Override
 					protected void done() {
 						// TODO Auto-generated method stub

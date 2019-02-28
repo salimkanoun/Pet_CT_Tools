@@ -125,7 +125,6 @@ public class Image_Reader {
 		if(sliceMap.size() ==imp.getStackSize()) {
 			for(int i=1; i<=imp.getStackSize(); i++){
 				int sliceToadd=sliceMap.get(i);
-				System.out.println(imp.getStack().getSliceLabel(sliceToadd));
 				stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
 			}
 		//Else return original stack	
