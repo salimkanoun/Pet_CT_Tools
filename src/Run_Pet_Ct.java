@@ -1,5 +1,4 @@
 
-
 import java.util.ArrayList;
 
 import ij.IJ;
@@ -35,6 +34,10 @@ public class Run_Pet_Ct {
 		try {
 			Thread.sleep(msec);
 		} catch (Exception e) { e.printStackTrace();}
+	}
+	
+	public static void main (String[] arg) {
+		new Run_Pet_Ct(new ArrayList<ImagePlus>());
 	}
 
 }

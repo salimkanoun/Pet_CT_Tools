@@ -194,7 +194,7 @@ public class Reader_Gui extends JFrame {
 							}
 							
 							if(ct && pet) {
-								Class Run_Pet_Ct = null;
+								Class<?> Run_Pet_Ct = null;
 								try {
 									Run_Pet_Ct = Class.forName("Run_Pet_Ct");
 								} catch (ClassNotFoundException e1) {
@@ -202,7 +202,7 @@ public class Reader_Gui extends JFrame {
 									e1.printStackTrace();
 								}
 								try {
-									Constructor cs=Run_Pet_Ct.getDeclaredConstructor(ArrayList.class);
+									Constructor<?> cs=Run_Pet_Ct.getDeclaredConstructor(ArrayList.class);
 									cs.newInstance(imagesPlus);
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
