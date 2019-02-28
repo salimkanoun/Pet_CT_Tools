@@ -27,16 +27,16 @@ public class Dicom_Reader implements PlugIn{
 		gui.setVisible(true);
 		
 	}
+	
+	//NB : Lancement auto du viewer => Necessite class Run _pet_ct de Orthanc Tools
 
 	//SK To DO
 	//DICOM DIR=> A tester
 	//Supression des DICOMDIR ? => interdit a tester
-	//Swing worker et progress bar lecture => a tester
-	//Lancement auto du viewer
 	//Renderer Selection
 	//Read All Study ?
-	//Compressed DICOM?
-	// Presence du GR de BF ?
+	//Compressed DICOM ?
+	//Presence du GR de BF ?
 
 	
 }
