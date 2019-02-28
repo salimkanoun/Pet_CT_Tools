@@ -32,7 +32,6 @@ public class Dicom_Reader implements PlugIn{
 
 	//SK To DO
 	//Renderer Selection
-	//Read All Study?
 	//Compressed DICOM?
 	//Presence du GR de BF?
 
