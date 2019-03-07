@@ -31,7 +31,6 @@ public class Dicom_Reader implements PlugIn{
 	//NB : Lancement auto du viewer => Necessite class Run _pet_ct de Orthanc Tools
 
 	//SK To DO
-	//Renderer Selection
 	//Compressed DICOM?
 	//Presence du GR de BF?
 

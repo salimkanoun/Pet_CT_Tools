@@ -5,6 +5,8 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -78,13 +80,24 @@ public class Reader_Gui extends JFrame {
 		panel_north.add(comboBox_position_read);
 		
 		JLabel lblPathNa = new JLabel("Path : N/A");
-
+		
+		comboBox_position_read.setSelectedIndex(-1);
+		comboBox_position_read.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent arg0) {
+				if(arg0.getStateChange()==ItemEvent.SELECTED) {
+					String path=(String) table_path_setup.getValueAt( comboBox_position_read.getSelectedIndex(),1);
+					lblPathNa.setText("Path : "+path);
+				}
+			}
+			
+		});
+		
 		btnScanFolder = new JButton("Scan Folder");
 		btnScanFolder.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				storeLastRead(comboBox_position_read.getSelectedIndex());
-				String path=(String) table_path_setup.getValueAt( (int) comboBox_position_read.getSelectedItem()-1,1);
-				lblPathNa.setText("Path : "+path);
+				String path=(String) table_path_setup.getValueAt(comboBox_position_read.getSelectedIndex() ,1);
 				emptyStudySerieTable();
 				btnScanFolder.setEnabled(false);
 				
@@ -109,9 +122,6 @@ public class Reader_Gui extends JFrame {
 				};
 				
 				worker.execute();
-				
-				
-				
 				
 			}
 		});
@@ -329,12 +339,10 @@ public class Reader_Gui extends JFrame {
 					tableSeries.getColumnModel().getColumn(3).setMaxWidth(100);
 					
 				}
-				
-				
 	        }
-
-
 	    });
+		
+		comboBox_position_read.setSelectedIndex(getLastRead());
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 	}
@@ -370,11 +378,9 @@ public class Reader_Gui extends JFrame {
 						details});
 				
 			}
-			
-			
+
 		}
-		
-		
+
 	}
 	
 	private void emptyStudySerieTable() {
