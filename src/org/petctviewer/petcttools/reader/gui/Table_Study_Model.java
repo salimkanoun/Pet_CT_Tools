@@ -10,11 +10,11 @@ public class Table_Study_Model extends DefaultTableModel{
 
 	private static final long serialVersionUID = 1L;
 	
-	private String[] columnTitle = {"Patient Name", "Patient ID", "Date","Description", "Accession", "Study Directory", "Series Object" };
-	private Class<?>[] columnClass = {String.class, String.class, Date.class, String.class, String.class, Object.class, Series_Details.class};
+	private String[] columnTitle = {"Patient Name", "Patient ID", "Date","Description", "Accession", "Study Directory", "Series Object", "readBF" };
+	private Class<?>[] columnClass = {String.class, String.class, Date.class, String.class, String.class, Object.class, Series_Details.class, Boolean.class};
 	
 	public Table_Study_Model() {
-		super(0,7);
+		super(0,8);
 		
 	}
 	

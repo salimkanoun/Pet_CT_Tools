@@ -54,6 +54,12 @@ public class Read_Local_Dicom {
 		    }
 		});
 		
+		File[] filegr = folder.listFiles(new FilenameFilter() {
+		    public boolean accept(File dir, String name) {
+		        return (name.toLowerCase().endsWith(".gr2") );
+		    }
+		});
+		
 
 		if(directories.length==0 
 				&& files.length>0) {
@@ -84,8 +90,13 @@ public class Read_Local_Dicom {
 				String modality=meta2.getString(Tag.Modality);
 				String sopClassUID=meta2.getString(Tag.SOPClassUID);
 				
+				boolean readBf=false;
+				if(filegr.length>0) {
+					readBf=true;
+				}
+				
 				Series_Details seriesDetails=new Series_Details(ts, patientName, patientId, accessionNumber, studyUID, studyDescription,
-						studyDate, serieDescription, serieNumber, modality, numberOfImage, sopClassUID, files[0].getParentFile());
+						studyDate, serieDescription, serieNumber, modality, numberOfImage, sopClassUID,readBf, files[0].getParentFile());
 				
 				
 				addToDicomMap(studyUID, seriesDetails);
@@ -165,11 +176,11 @@ public class Read_Local_Dicom {
 					String serieNumber=serie.getSerieNumber();
 					String sopClassUID=serie.getSopClassUID();
 					ArrayList<String> fileLocationList=serie.getFileList();
-					
+					//SK A VOIR SI BF MARCHE AUSSI AVEC DICOMDIR
 					Series_Details seriesDetails=new Series_Details(transfertSyntax, patientName, patientId,
 							accessionNumber, studyUID, studyDescription,
 							studyDate, serieDescription, serieNumber, modality, String.valueOf(numberOfImage), 
-							sopClassUID, null);
+							sopClassUID, false,null);
 					seriesDetails.setDicomDir(dicomDir.getParent(),fileLocationList);
 					
 					addToDicomMap(studyUID, seriesDetails);

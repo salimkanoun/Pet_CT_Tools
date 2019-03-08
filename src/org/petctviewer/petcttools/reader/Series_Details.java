@@ -27,6 +27,7 @@ public class Series_Details {
 	public String sopClassUID;
 	public String imageType;
 	public File fileLocation;
+	public boolean readBF;
 	public boolean isDicomDir=false;
 	public ArrayList<File> fileLocationList;
 	
@@ -47,7 +48,7 @@ public class Series_Details {
 	 * @param fileLocation
 	 */
 	public Series_Details(String transferSyntax, String patientName, String patientId, String accessionNumber, String studyUID, String studyDescription,
-			String studyDate, String serieDescription, String serieNumber, String modality, String numberOfImage, String sopClassUID, File fileLocation) {
+			String studyDate, String serieDescription, String serieNumber, String modality, String numberOfImage, String sopClassUID, boolean readBF, File fileLocation) {
 		
 		//Parse dicomDate String and put 01-01-1900 if unparseable
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd");
@@ -83,6 +84,7 @@ public class Series_Details {
 		this.sopClassUID=sopClassUID;
 		this.fileLocation=fileLocation;
 		this.accessionNumber=accessionNumber;
+		this.readBF=readBF;
 		
 		determineImageType();
 		determineIsCompressed();

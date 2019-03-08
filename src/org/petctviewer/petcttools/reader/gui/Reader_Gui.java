@@ -42,6 +42,9 @@ import org.petctviewer.petcttools.reader.Read_Local_Dicom;
 import org.petctviewer.petcttools.reader.Series_Details;
 
 import ij.ImagePlus;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
 
 @SuppressWarnings("serial")
 public class Reader_Gui extends JFrame {
@@ -98,6 +101,7 @@ public class Reader_Gui extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				storeLastRead(comboBox_position_read.getSelectedIndex());
 				String path=(String) table_path_setup.getValueAt(comboBox_position_read.getSelectedIndex() ,1);
+				lblPathNa.setText("Path : "+path);
 				emptyStudySerieTable();
 				btnScanFolder.setEnabled(false);
 				
@@ -144,15 +148,40 @@ public class Reader_Gui extends JFrame {
 		tableStudy.getColumnModel().getColumn(5).setMaxWidth(0);
 		tableStudy.getColumnModel().getColumn(6).setMinWidth(0);
 		tableStudy.getColumnModel().getColumn(6).setMaxWidth(0);
+		tableStudy.getColumnModel().getColumn(7).setMinWidth(50);
+		tableStudy.getColumnModel().getColumn(7).setMaxWidth(50);
 		
 		tableStudy.setAutoCreateRowSorter(true);
 		addPopupMenu(tableStudy);
+		
+		tableStudy.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			@Override
+	        public void valueChanged(ListSelectionEvent event) {
+				
+				
+				if(tableStudy.getSelectedRowCount()!=0) {
+					@SuppressWarnings("unchecked")
+					ArrayList<Series_Details> series=(ArrayList<Series_Details>) tableStudy.getValueAt(tableStudy.getSelectedRow(), 6);
+					
+					tableSeries.setModel(new Table_Series_Model(series));
+					
+					tableSeries.getColumnModel().getColumn(4).setMinWidth(0);
+					tableSeries.getColumnModel().getColumn(4).setMaxWidth(0);
+					tableSeries.getColumnModel().getColumn(5).setMinWidth(0);
+					tableSeries.getColumnModel().getColumn(5).setMaxWidth(0);
+
+					tableSeries.getColumnModel().getColumn(1).setMaxWidth(100);
+					tableSeries.getColumnModel().getColumn(3).setMaxWidth(100);
+					
+				}
+	        }
+	    });
 		
 		JScrollPane scrollPane_serie = new JScrollPane();
 		panel_center.add(scrollPane_serie);
 		
 		tableSeries = new JTable_Color();
-			
+		
 		tableSeries.setAutoCreateRowSorter(true);
 		addPopupMenu(tableSeries);
 		
@@ -317,31 +346,6 @@ public class Reader_Gui extends JFrame {
 		});
 		panel_north_stup.add(btnNewButton);
 		
-		tableStudy.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
-			@Override
-	        public void valueChanged(ListSelectionEvent event) {
-				
-				
-				if(tableStudy.getSelectedRowCount()!=0) {
-					@SuppressWarnings("unchecked")
-					ArrayList<Series_Details> series=(ArrayList<Series_Details>) tableStudy.getValueAt(tableStudy.getSelectedRow(), 6);
-					
-					tableSeries.setModel(new Table_Series_Model(series));
-					
-					tableSeries.getColumnModel().getColumn(4).setMinWidth(0);
-					tableSeries.getColumnModel().getColumn(4).setMaxWidth(0);
-					tableSeries.getColumnModel().getColumn(5).setMinWidth(0);
-					tableSeries.getColumnModel().getColumn(5).setMaxWidth(0);
-					
-		
-					tableSeries.getColumnModel().getColumn(1).setMaxWidth(100);
-
-					tableSeries.getColumnModel().getColumn(3).setMaxWidth(100);
-					
-				}
-	        }
-	    });
-		
 		comboBox_position_read.setSelectedIndex(getLastRead());
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
@@ -366,16 +370,23 @@ public class Reader_Gui extends JFrame {
 						details.get(0).studyDescription,
 						details.get(0).accessionNumber,
 						null,
-						details});
+						details,
+						false});
 				
 			}else {
+				//Seach if one of the series has the BF File
+				boolean readBf=false;
+				for(Series_Details detail: details) {
+					if(detail.readBF) readBf=true;
+				}
 				modelStudy.addRow(new Object[] {details.get(0).patientName,
 						details.get(0).patientId,
 						details.get(0).studyDate,
 						details.get(0).studyDescription,
 						details.get(0).accessionNumber,
 						details.get(0).fileLocation.getParentFile(),
-						details});
+						details,
+						readBf});
 				
 			}
 
