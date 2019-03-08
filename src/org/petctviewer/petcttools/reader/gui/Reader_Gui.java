@@ -45,6 +45,7 @@ import ij.ImagePlus;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import javax.swing.ScrollPaneConstants;
 
 @SuppressWarnings("serial")
 public class Reader_Gui extends JFrame {
@@ -134,15 +135,19 @@ public class Reader_Gui extends JFrame {
 		
 		JPanel panel_center = new JPanel();
 		panel_read.add(panel_center, BorderLayout.CENTER);
-		panel_center.setLayout(new GridLayout(0, 2, 0, 0));
+		panel_center.setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane_study = new JScrollPane();
-		panel_center.add(scrollPane_study);
+		panel_center.add(scrollPane_study, BorderLayout.CENTER);
 		
 		tableStudy = new JTable_Color();
 		
+		
 		tableStudy.setModel(modelStudy);
 		scrollPane_study.setViewportView(tableStudy);
+		
+		tableStudy.getColumnModel().getColumn(0).setMinWidth(100);
+		tableStudy.getColumnModel().getColumn(1).setMinWidth(100);
 		
 		tableStudy.getColumnModel().getColumn(5).setMinWidth(0);
 		tableStudy.getColumnModel().getColumn(5).setMaxWidth(0);
@@ -152,6 +157,8 @@ public class Reader_Gui extends JFrame {
 		tableStudy.getColumnModel().getColumn(7).setMaxWidth(50);
 		
 		tableStudy.setAutoCreateRowSorter(true);
+		tableStudy.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+	
 		addPopupMenu(tableStudy);
 		
 		tableStudy.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -171,6 +178,7 @@ public class Reader_Gui extends JFrame {
 					tableSeries.getColumnModel().getColumn(5).setMaxWidth(0);
 
 					tableSeries.getColumnModel().getColumn(1).setMaxWidth(100);
+					tableSeries.getColumnModel().getColumn(2).setMaxWidth(100);
 					tableSeries.getColumnModel().getColumn(3).setMaxWidth(100);
 					
 				}
@@ -178,7 +186,7 @@ public class Reader_Gui extends JFrame {
 	    });
 		
 		JScrollPane scrollPane_serie = new JScrollPane();
-		panel_center.add(scrollPane_serie);
+		panel_center.add(scrollPane_serie, BorderLayout.EAST);
 		
 		tableSeries = new JTable_Color();
 		
