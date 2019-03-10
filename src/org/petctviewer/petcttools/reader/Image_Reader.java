@@ -77,7 +77,8 @@ public class Image_Reader {
 		return image;
 	}
 	
-	private void readFileBioFormat(File file) {
+	public static void readFileBioFormat(File file) {
+		file=new File("/home/salim/ASC/compressed/CT/CT_001_0a8d4fbbe8d54d07a133dd8d66885817.dcm");
 		ImagePlus[] imp=null;
 		try {
 			imp=BF.openImagePlus(file.getAbsolutePath().toString());
@@ -136,6 +137,11 @@ public class Image_Reader {
 		return stack2;
 	}
 	
+	
+	public static void main(String[] args) {
+		Image_Reader.readFileBioFormat(null);
+		
+	}
 	
 	
 

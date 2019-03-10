@@ -1,12 +1,11 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
- 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  
   <parent>
 	<groupId>org.scijava</groupId>
 	<artifactId>pom-scijava</artifactId>
-	<version>19.2.0</version>
+	<version>25.0.0</version>
 	<relativePath/>
-
   </parent>
   
   <properties>
@@ -27,6 +26,11 @@
 	<id>imagej.public</id>
 	<url>http://maven.imagej.net/content/groups/public</url>
 	 </repository>
+	 <repository>
+      <id>ome</id>
+      <name>OME Artifactory</name>
+      <url>https://artifacts.openmicroscopy.org/artifactory/maven/</url>
+    </repository>
      <repository>
       <id>www.dcm4che.org</id>
       <name>dcm4che Repository</name>
@@ -39,16 +43,6 @@
   </build>
   
   <dependencies>
-  
-  	<dependency>
-    <groupId>net.imagej</groupId>
-    <artifactId>ij</artifactId>
-    </dependency>
-	
-  	<dependency>
-    <groupId>sc.fiji</groupId>
-    <artifactId>Trainable_Segmentation</artifactId>
-    </dependency>
 	
 	<dependency>
 	<groupId>sc.fiji</groupId>
@@ -72,44 +66,36 @@
 	</dependency>
 	
 	<dependency>
-	    <groupId>ome</groupId>
-	    <artifactId>formats-gpl</artifactId>
+    <groupId>ome</groupId>
+    <artifactId>formats-gpl</artifactId>
     </dependency>
-    
-    <dependency>
-	    <groupId>ome</groupId>
-	    <artifactId>formats-api</artifactId>
-	    </dependency>
 	
 	<dependency>
-	    <groupId>ome</groupId>
-	    <artifactId>formats-bsd</artifactId>
-	    </dependency>
-    <dependency>
-    
+    <groupId>org.openmicroscopy</groupId>
+    <artifactId>ome-xml</artifactId>
+    </dependency>
+
+	<dependency>
     <groupId>org.openmicroscopy</groupId>
     <artifactId>ome-common</artifactId>
-	</dependency>
+    </dependency>
 	
-	<dependency>
-	    <groupId>org.openmicroscopy</groupId>
-	    <artifactId>ome-xml</artifactId>
-	</dependency>
-	
-	<dependency>
-	    <groupId>loci</groupId>
-	    <artifactId>loci_plugins</artifactId>
-	    <version>4.4.9</version>
-	</dependency>
-	
+<dependency>
+    <groupId>ome</groupId>
+    <artifactId>bio-formats_plugins</artifactId>
+    <version>6.0.0</version>
+</dependency>
+
 	<dependency>
 	    <groupId>org.dcm4che</groupId>
 	    <artifactId>dcm4che-core</artifactId>
 	    <version>5.14.1</version>
 	</dependency>
 	
-
-	
+	<dependency>
+    <groupId>sc.fiji</groupId>
+    <artifactId>Trainable_Segmentation</artifactId>
+    </dependency>
 
   </dependencies>
 </project>
