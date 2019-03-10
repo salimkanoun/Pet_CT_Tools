@@ -2,9 +2,11 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Scanner;
+import java.util.Set;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -13,8 +15,8 @@ import ij.io.Opener;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import ij.util.DicomTools;
-import loci.formats.FormatException;
 import loci.plugins.BF;
+import loci.plugins.in.ImporterOptions;
 
 public class Image_Reader {
 	
@@ -82,22 +84,6 @@ public class Image_Reader {
 		return image;
 	}
 	
-	/*
-	public static void readFileBioFormat(File file) {
-		file=new File("/home/salim/ASC/compressed/CT/CT_001_0a8d4fbbe8d54d07a133dd8d66885817.dcm");
-		ImagePlus[] imp=null;
-		try {
-			imp=BF.openImagePlus(file.getAbsolutePath().toString());
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(imp.length);
-		imp[0].show();
-		System.out.println(imp[0].getInfoProperty());
-
-	}*/
-	
 	private ImagePlus readFile(File file, boolean compressed) {
 		ImagePlus slice=null;
 		if(!compressed){
@@ -106,7 +92,18 @@ public class Image_Reader {
 			
 		}else{
 			try {
-				slice=BF.openImagePlus(file.getAbsolutePath().toString())[0];
+				ImporterOptions option=new ImporterOptions();
+				option.setOpenAllSeries(false);
+				option.setQuiet(true);
+				option.setShowMetadata(false);
+				option.setStackOrder(ImporterOptions.ORDER_XYZTC);
+				option.setId(file.getAbsolutePath().toString());
+				ImagePlus[] images=BF.openImagePlus(option);
+				System.out.println(images.length);
+				slice=images[0];
+				String info = slice.getInfoProperty();
+				String newMeta=processDicomMetaBioFormat(info);
+				slice.setProperty("Info", newMeta);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -155,12 +152,46 @@ public class Image_Reader {
 		return stack2;
 	}
 	
-	
-	/*public static void main(String[] args) {
-		Image_Reader.readFileBioFormat(null);
+	private String processDicomMetaBioFormat(String info) throws InterruptedException{
+		Scanner scanner = new Scanner(info);
 		
-	}*/
+		HashMap<String,Boolean> issequenceTag=new HashMap<String,Boolean>();
+		HashMap<String,String> rawUniqueTag=new HashMap<String,String>();
+		
+		while (scanner.hasNextLine()) {
+		  
+		  String line = scanner.nextLine();
+		  String tagRead=line.substring(0,9);
+			if(issequenceTag.containsKey(tagRead)){
+				issequenceTag.put(tagRead,true);
+				
+			}else{
+				issequenceTag.put(tagRead,false);
+				rawUniqueTag.put(tagRead, line);
+			}
+		}
+		
+		scanner.close();
+		
+		ArrayList<String> uniqueTag=new ArrayList<String>();
+		
+		Set<String> tags=issequenceTag.keySet();
+		for(String tag:tags){
+			if(!issequenceTag.get(tag)){
+				String rawTag=rawUniqueTag.get(tag);
+				String newtag=rawTag.replace(" #1 =", ":");
+				uniqueTag.add(newtag);
+			}
+		}
+		
+		Collections.sort(uniqueTag);
+		StringBuilder tagsFinal=new StringBuilder();
+		for(String finalTag:uniqueTag){
+			tagsFinal.append(finalTag+"\n");
+			
+		}
+		
+		return tagsFinal.toString();
+	}
 	
-	
-
 }

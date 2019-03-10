@@ -234,7 +234,7 @@ public class Reader_Gui extends JFrame {
 								
 							}
 								
-							
+							//If we open at least one pet and one CT open the PET/CT viewer
 							if(ct && pet) {
 								Class<?> Run_Pet_Ct = null;
 								try {
