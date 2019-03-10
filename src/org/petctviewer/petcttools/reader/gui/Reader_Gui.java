@@ -217,6 +217,7 @@ public class Reader_Gui extends JFrame {
 							for(int row : rows) {
 								
 								Series_Details seriesDetails=(Series_Details) tableSeries.getValueAt(row, 5);
+								ctOrPet(tableSeries.getValueAt(row, 1).toString());
 								Object sourceFiles=tableSeries.getValueAt(row, 4);
 								Image_Reader reader=null;
 								if ( sourceFiles instanceof File){
@@ -229,7 +230,7 @@ public class Reader_Gui extends JFrame {
 								imagesPlus.add(image);
 								image.show();
 								
-								ctOrPet(tableSeries.getValueAt(row, 1).toString());
+								
 								
 							}
 								
