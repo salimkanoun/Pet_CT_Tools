@@ -205,40 +205,34 @@ public class Reader_Gui extends JFrame {
 					
 					boolean ct, pet=false;
 
+					@SuppressWarnings("unchecked")
 					@Override
 					protected Void doInBackground() throws Exception {
 						if(tableSeries.getSelectedRowCount()!=0) {
 							int[] rows=tableSeries.getSelectedRows();
 							ArrayList<ImagePlus> imagesPlus=new ArrayList<ImagePlus>();
 							
-							if(tableSeries.getValueAt(rows[0], 4) instanceof File) {
-								ArrayList<File> folders=new ArrayList<File>();
+
+							//SK A TESTER
+							for(int row : rows) {
 								
-								for(int row : rows) {
-									folders.add((File) tableSeries.getValueAt(row, 4));
-									ctOrPet(tableSeries.getValueAt(row, 1).toString());
-									
+								Series_Details seriesDetails=(Series_Details) tableSeries.getValueAt(row, 5);
+								Object sourceFiles=tableSeries.getValueAt(row, 4);
+								Image_Reader reader=null;
+								if ( sourceFiles instanceof File){
+									reader=new Image_Reader((File) sourceFiles, seriesDetails.isCompressed);
+								}else if( sourceFiles instanceof ArrayList){
+									reader=new Image_Reader((ArrayList<File>) sourceFiles, seriesDetails.isCompressed);
 								}
 								
-								for(File folder: folders) {
-									Image_Reader reader=new Image_Reader(folder);
-									ImagePlus image=reader.getImagePlus();
-									imagesPlus.add(image);
-									image.show();
-								}
+								ImagePlus image=reader.getImagePlus();
+								imagesPlus.add(image);
+								image.show();
 								
-							}else if(tableSeries.getValueAt(rows[0], 4) instanceof ArrayList) {
+								ctOrPet(tableSeries.getValueAt(row, 1).toString());
 								
-								for(int row : rows) {
-									@SuppressWarnings("unchecked")
-									ArrayList<File> fileList=(ArrayList<File>) tableSeries.getValueAt(row, 4);
-									ctOrPet(tableSeries.getValueAt(row, 1).toString());
-									Image_Reader reader=new Image_Reader(fileList);
-									ImagePlus image=reader.getImagePlus();
-									imagesPlus.add(image);
-									image.show();
-								}
 							}
+								
 							
 							if(ct && pet) {
 								Class<?> Run_Pet_Ct = null;

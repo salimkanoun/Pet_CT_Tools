@@ -2,6 +2,7 @@ package org.petctviewer.petcttools.reader;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -12,24 +13,28 @@ import ij.io.Opener;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import ij.util.DicomTools;
+import loci.formats.FormatException;
 import loci.plugins.BF;
 
 public class Image_Reader {
 	
 	private ImagePlus image;
+	boolean compressed;
 	
-	public Image_Reader(File path) {
-		
+	public Image_Reader(File path, boolean compressed) {
+		this.compressed=compressed;
 		File[] files = path.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
 		        return (name.toLowerCase().endsWith(".dcm") || !name.contains(".") );
 		    }
 		});
 		
+		
 		readFiles(files);
 	}
 	
-	public Image_Reader(ArrayList<File> files) {
+	public Image_Reader(ArrayList<File> files, boolean compressed) {
+		this.compressed=compressed;
 		File[] fileArray=new File[files.size()];
 		files.toArray(fileArray);
 		readFiles(fileArray);
@@ -43,7 +48,7 @@ public class Image_Reader {
 		
 		int i=0;
 		for (File file: files) {
-			ImagePlus slice=this.readFile(file);
+			ImagePlus slice=this.readFile(file, compressed);
 			if(stack==null) {
 				ImageProcessor ip=slice.getProcessor();
 				stack=new ImageStack(ip.getWidth(), ip.getHeight(), ip.getColorModel());
@@ -77,6 +82,7 @@ public class Image_Reader {
 		return image;
 	}
 	
+	/*
 	public static void readFileBioFormat(File file) {
 		file=new File("/home/salim/ASC/compressed/CT/CT_001_0a8d4fbbe8d54d07a133dd8d66885817.dcm");
 		ImagePlus[] imp=null;
@@ -86,14 +92,26 @@ public class Image_Reader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		System.out.println(imp.length);
 		imp[0].show();
+		System.out.println(imp[0].getInfoProperty());
 
-	}
+	}*/
 	
-	private ImagePlus readFile(File file) {
-		Opener opener = new Opener();
-		ImagePlus slice=opener.openImage(file.getAbsolutePath().toString());
+	private ImagePlus readFile(File file, boolean compressed) {
+		ImagePlus slice=null;
+		if(!compressed){
+			Opener opener = new Opener();
+			slice=opener.openImage(file.getAbsolutePath().toString());
+			
+		}else{
+			try {
+				slice=BF.openImagePlus(file.getAbsolutePath().toString())[0];
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+
 		return slice;
 	}
 	
@@ -138,10 +156,10 @@ public class Image_Reader {
 	}
 	
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		Image_Reader.readFileBioFormat(null);
 		
-	}
+	}*/
 	
 	
 
