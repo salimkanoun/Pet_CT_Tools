@@ -99,10 +99,9 @@ public class Image_Reader {
 				option.setStackOrder(ImporterOptions.ORDER_XYZTC);
 				option.setId(file.getAbsolutePath().toString());
 				ImagePlus[] images=BF.openImagePlus(option);
-				System.out.println(images.length);
 				slice=images[0];
 				String info = slice.getInfoProperty();
-				String newMeta=processDicomMetaBioFormat(info);
+				String newMeta=simpleModifyBF(info);
 				slice.setProperty("Info", newMeta);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -152,11 +151,17 @@ public class Image_Reader {
 		return stack2;
 	}
 	
+	private String simpleModifyBF(String info) {
+		String newInfo=info.replaceAll(" #1 =", ":");
+		return newInfo;
+	}
+	
 	private String processDicomMetaBioFormat(String info) throws InterruptedException{
 		Scanner scanner = new Scanner(info);
 		
 		HashMap<String,Boolean> issequenceTag=new HashMap<String,Boolean>();
 		HashMap<String,String> rawUniqueTag=new HashMap<String,String>();
+		HashMap<String,ArrayList<String>> rawMultipleTag=new HashMap<String,ArrayList<String>>();
 		
 		while (scanner.hasNextLine()) {
 		  
@@ -164,6 +169,10 @@ public class Image_Reader {
 		  String tagRead=line.substring(0,9);
 			if(issequenceTag.containsKey(tagRead)){
 				issequenceTag.put(tagRead,true);
+				if(rawMultipleTag.get(tagRead)==null){
+					rawMultipleTag.put(tagRead, new ArrayList<String>());
+				}
+				rawMultipleTag.get(tagRead).add(line);
 				
 			}else{
 				issequenceTag.put(tagRead,false);
@@ -188,6 +197,12 @@ public class Image_Reader {
 		StringBuilder tagsFinal=new StringBuilder();
 		for(String finalTag:uniqueTag){
 			tagsFinal.append(finalTag+"\n");
+			
+		}
+		
+		Set<String> tagsMultiple=rawMultipleTag.keySet();
+		for(String multipleTag:tagsMultiple){
+			System.out.println(multipleTag);
 			
 		}
 		
