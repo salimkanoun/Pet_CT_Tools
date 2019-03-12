@@ -156,7 +156,7 @@ public class Image_Reader {
 		return newInfo;
 	}
 	
-	private String processDicomMetaBioFormat(String info) throws InterruptedException{
+	private String processDicomMetaBioFormat(String info){
 		Scanner scanner = new Scanner(info);
 		
 		HashMap<String,Boolean> issequenceTag=new HashMap<String,Boolean>();
