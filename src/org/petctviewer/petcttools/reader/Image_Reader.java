@@ -58,6 +58,7 @@ public class Image_Reader {
 			}
 			stack.addSlice(slice.getInfoProperty(),slice.getProcessor());
 			i++;
+			IJ.showStatus("Reading");
 			IJ.showProgress((double) i/files.length);
 			
 		}
