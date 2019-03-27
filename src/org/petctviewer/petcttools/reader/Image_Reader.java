@@ -66,11 +66,12 @@ public class Image_Reader {
 		
 		ImagePlus imp=new ImagePlus();
 		imp.setStack(stack);
+		imp.show();
 		
 		imp.setCalibration(calibration);
 		
 		ImageStack stackSorted=this.sortStack(imp);
-		imp.close();
+		//imp.close();
 		ImagePlus imp2=new ImagePlus();
 		imp2.setStack(stackSorted);
 		imp2.setCalibration(calibration);
@@ -89,8 +90,7 @@ public class Image_Reader {
 		ImagePlus slice=null;
 		if(!compressed){
 			Opener opener = new Opener();
-			slice=opener.openImage(file.getAbsolutePath().toString());
-			
+			slice=opener.openImage(file.getAbsolutePath().toString());		
 		}else{
 			try {
 				ImporterOptions option=new ImporterOptions();
@@ -129,9 +129,11 @@ public class Image_Reader {
 			try {
 				imp.setSlice(i);
 				String imageNumber=DicomTools.getTag(imp, "0020,0013").trim();
+				System.out.println(imageNumber);
 				sliceMap.put(Integer.parseInt(imageNumber), i);	
 			
 			}catch(Exception e1){
+				System.out.println("error");
 				//If parse error of slice number return the original stack
 				return imp.getStack();
 			}
@@ -141,6 +143,7 @@ public class Image_Reader {
 		if(sliceMap.size() ==imp.getStackSize()) {
 			for(int i=1; i<=imp.getStackSize(); i++){
 				int sliceToadd=sliceMap.get(i);
+				System.out.println("order"+i);
 				stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
 			}
 		//Else return original stack	
