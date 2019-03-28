@@ -42,10 +42,6 @@ import org.petctviewer.petcttools.reader.Read_Local_Dicom;
 import org.petctviewer.petcttools.reader.Series_Details;
 
 import ij.ImagePlus;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import javax.swing.ScrollPaneConstants;
 
 @SuppressWarnings("serial")
 public class Reader_Gui extends JFrame {

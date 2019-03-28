@@ -27,13 +27,13 @@ public class Dicom_Reader implements PlugIn{
 		gui.setLocationRelativeTo(null);
 		gui.setVisible(true);
 		//Force reading with 32 bits
-		Prefs.openDicomsAsFloat=true;
+		Prefs.ignoreRescaleSlope=true;
 		
 	}
 	
 	//NB : Lancement auto du viewer => Necessite class Run _pet_ct de Orthanc Tools
-
 	//SK To DO
+	//IgnoreRescaleSlope A suivre
 	//Compressed DICOM?
 
 	
