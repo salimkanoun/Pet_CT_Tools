@@ -2,6 +2,7 @@ package org.petctviewer.petcttools.reader;
 
 import org.petctviewer.petcttools.reader.gui.Reader_Gui;
 
+import ij.Prefs;
 import ij.plugin.PlugIn;
 
 /**
@@ -25,6 +26,8 @@ public class Dicom_Reader implements PlugIn{
 		gui.pack();
 		gui.setLocationRelativeTo(null);
 		gui.setVisible(true);
+		//Force reading with 32 bits
+		Prefs.openDicomsAsFloat=true;
 		
 	}
 	

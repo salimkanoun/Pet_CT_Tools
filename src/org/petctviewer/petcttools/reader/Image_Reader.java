@@ -66,12 +66,10 @@ public class Image_Reader {
 		
 		ImagePlus imp=new ImagePlus();
 		imp.setStack(stack);
-		imp.show();
 		
 		imp.setCalibration(calibration);
 		
 		ImageStack stackSorted=this.sortStack(imp);
-		//imp.close();
 		ImagePlus imp2=new ImagePlus();
 		imp2.setStack(stackSorted);
 		imp2.setCalibration(calibration);
@@ -129,7 +127,6 @@ public class Image_Reader {
 			try {
 				imp.setSlice(i);
 				String imageNumber=DicomTools.getTag(imp, "0020,0013").trim();
-				System.out.println(imageNumber);
 				sliceMap.put(Integer.parseInt(imageNumber), i);	
 			
 			}catch(Exception e1){
@@ -143,7 +140,6 @@ public class Image_Reader {
 		if(sliceMap.size() ==imp.getStackSize()) {
 			for(int i=1; i<=imp.getStackSize(); i++){
 				int sliceToadd=sliceMap.get(i);
-				System.out.println("order"+i);
 				stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
 			}
 		//Else return original stack	
