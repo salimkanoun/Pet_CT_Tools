@@ -11,6 +11,7 @@ import java.util.Set;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
+import ij.io.FileInfo;
 import ij.io.Opener;
 import ij.measure.Calibration;
 import ij.process.ImageProcessor;
@@ -67,7 +68,7 @@ public class Image_Reader {
 		ImagePlus imp=new ImagePlus();
 		imp.setStack(stack);
 		
-		imp.setCalibration(calibration);
+		
 		
 		ImageStack stackSorted=this.sortStack(imp);
 		ImagePlus imp2=new ImagePlus();
@@ -75,6 +76,13 @@ public class Image_Reader {
 		imp2.setCalibration(calibration);
 		imp2.setProperty("Info", imp2.getStack().getSliceLabel(1));
 		imp2.setTitle(DicomTools.getTag(imp2, "0010,0010")+"-"+DicomTools.getTag(imp2, "0008,0022")+"-"+DicomTools.getTag(imp2, "0008,103E"));
+		
+		FileInfo fi=new FileInfo();
+		fi.fileFormat = FileInfo.UNKNOWN;
+		fi.fileName = "";
+		fi.directory = files[0].getParent();
+		
+		imp2.setFileInfo(fi);
 		
 		image=imp2;
 		
@@ -88,6 +96,7 @@ public class Image_Reader {
 		ImagePlus slice=null;
 		if(!compressed){
 			Opener opener = new Opener();
+			opener.setSilentMode(true);
 			slice=opener.openImage(file.getAbsolutePath().toString());		
 		}else{
 			try {
@@ -106,6 +115,7 @@ public class Image_Reader {
 				e.printStackTrace();
 			}
 		}
+
 
 		return slice;
 	}
