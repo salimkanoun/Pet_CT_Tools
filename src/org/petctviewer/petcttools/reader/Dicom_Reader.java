@@ -26,7 +26,7 @@ public class Dicom_Reader implements PlugIn{
 		gui.pack();
 		gui.setLocationRelativeTo(null);
 		gui.setVisible(true);
-		//Force reading with 32 bits
+		//Force reading with 16 bits
 		Prefs.ignoreRescaleSlope=true;
 		
 	}
