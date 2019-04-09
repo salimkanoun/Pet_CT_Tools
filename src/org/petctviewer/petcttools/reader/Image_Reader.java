@@ -52,24 +52,33 @@ public class Image_Reader {
 		int i=0;
 		for (File file: files) {
 			ImagePlus slice=this.readFile(file, compressed);
+			
 			if(stack==null) {
 				ImageProcessor ip=slice.getProcessor();
 				stack=new ImageStack(ip.getWidth(), ip.getHeight(), ip.getColorModel());
 				calibration=slice.getCalibration();
 			}
-			stack.addSlice(slice.getInfoProperty(),slice.getProcessor());
-			i++;
-			IJ.showStatus("Reading");
-			IJ.showProgress((double) i/files.length);
+			if(slice.getStackSize()==1) {
+				stack.addSlice(slice.getInfoProperty(),slice.getProcessor());
+				i++;
+				IJ.showStatus("Reading");
+				IJ.showProgress((double) i/files.length);
+			//Case of MultiFrame Image	
+			}else if(slice.getStackSize()>=1) {
+				stack=slice.getStack();
+				for(int j=1; j<slice.getStackSize(); j++) {
+					stack.setSliceLabel(slice.getInfoProperty(), j);
+				}
+				break;
+			}
+			
 			
 		}
 		
 		
 		ImagePlus imp=new ImagePlus();
 		imp.setStack(stack);
-		
-		
-		
+
 		ImageStack stackSorted=this.sortStack(imp);
 		ImagePlus imp2=new ImagePlus();
 		imp2.setStack(stackSorted);
