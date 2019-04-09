@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.DefaultComboBoxModel;
@@ -27,6 +28,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.ListSelectionEvent;
@@ -34,6 +37,8 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -152,7 +157,14 @@ public class Reader_Gui extends JFrame {
 		tableStudy.getColumnModel().getColumn(7).setMinWidth(50);
 		tableStudy.getColumnModel().getColumn(7).setMaxWidth(50);
 		
-		tableStudy.setAutoCreateRowSorter(true);
+		//Set RowSorter to sort row by PatientID and then by study Date
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableStudy.getModel());
+		List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
+		sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
+		sortKeys.add(new RowSorter.SortKey(2, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		tableStudy.setRowSorter(sorter);
+		
 		tableStudy.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 	
 		addPopupMenu(tableStudy);
