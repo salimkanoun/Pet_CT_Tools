@@ -57,11 +57,11 @@ public class Reader_Gui extends JFrame {
 	
 	private Table_Study_Model modelStudy;
 	private JTable table_path_setup;
+	private TableRowSorter<TableModel> sorter;
 	
 	private Reader_Gui gui=this;
 	
 	Preferences jPrefer = Preferences.userNodeForPackage(this.getClass());
-	
 	
 	public Reader_Gui() {
 		super("Read Local Dicoms");
@@ -114,6 +114,7 @@ public class Reader_Gui extends JFrame {
 						Read_Local_Dicom reader= new Read_Local_Dicom();
 						reader.scanFolder(new File(path), btnScanFolder);
 						updateSerieTable(reader.dicomMap);
+						sorter.sort();
 						gui.pack();
 						return null;
 					}
@@ -147,9 +148,13 @@ public class Reader_Gui extends JFrame {
 		tableStudy.setModel(modelStudy);
 		scrollPane_study.setViewportView(tableStudy);
 		
-		tableStudy.getColumnModel().getColumn(0).setMinWidth(100);
-		tableStudy.getColumnModel().getColumn(1).setMinWidth(100);
-		
+//		tableStudy.getColumnModel().getColumn(0).setMinWidth(100);
+//		tableStudy.getColumnModel().getColumn(1).setMinWidth(100);
+//		
+		tableStudy.getColumnModel().getColumn(2).setMinWidth(100);
+		tableStudy.getColumnModel().getColumn(2).setMaxWidth(100);
+		tableStudy.getColumnModel().getColumn(4).setMinWidth(100);
+		tableStudy.getColumnModel().getColumn(4).setMaxWidth(100);
 		tableStudy.getColumnModel().getColumn(5).setMinWidth(0);
 		tableStudy.getColumnModel().getColumn(5).setMaxWidth(0);
 		tableStudy.getColumnModel().getColumn(6).setMinWidth(0);
@@ -158,7 +163,7 @@ public class Reader_Gui extends JFrame {
 		tableStudy.getColumnModel().getColumn(7).setMaxWidth(50);
 		
 		//Set RowSorter to sort row by PatientID and then by study Date
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableStudy.getModel());
+		sorter = new TableRowSorter<>(tableStudy.getModel());
 		List<RowSorter.SortKey> sortKeys = new ArrayList<RowSorter.SortKey>();
 		sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
 		sortKeys.add(new RowSorter.SortKey(2, SortOrder.ASCENDING));

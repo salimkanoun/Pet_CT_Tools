@@ -1,15 +1,15 @@
 package org.petctviewer.petcttools.reader.gui;
 
-import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 
 @SuppressWarnings("serial")
 public class JTable_Color extends JTable {
-	
-	
+	/*
+	@Override
 	public Component prepareRenderer(TableCellRenderer renderer, int row, int column){
 		
         Component returnComp = super.prepareRenderer(renderer, row, column);
@@ -22,5 +22,6 @@ public class JTable_Color extends JTable {
         }
         return returnComp;
         }
+	*/
 
 }
