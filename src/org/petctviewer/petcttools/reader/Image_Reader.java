@@ -154,18 +154,21 @@ public class Image_Reader {
 				return imp.getStack();
 			}
 		}
-		
-		//Check that the number of parsed image number is matching the number of slice
-		if(sliceMap.size() ==imp.getStackSize()) {
-			for(int i=1; i<=imp.getStackSize(); i++){
-				int sliceToadd=sliceMap.get(i);
-				stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
+		try {
+			//Check that the number of parsed image number is matching the number of slice
+			if(sliceMap.size() ==imp.getStackSize()) {
+				for(int i=1; i<=imp.getStackSize(); i++){
+					int sliceToadd=sliceMap.get(i);
+					stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
+				}
+			//Else return original stack	
+			}else {
+				return imp.getStack();
 			}
-		//Else return original stack	
-		}else {
-			return imp.getStack();
+		}catch(Exception e1){
+			
+			e1.printStackTrace();
 		}
-		
 		
 		return stack2;
 	}
