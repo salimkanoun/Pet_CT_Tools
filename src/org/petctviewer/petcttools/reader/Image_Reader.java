@@ -5,6 +5,7 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -154,19 +155,25 @@ public class Image_Reader {
 				return imp.getStack();
 			}
 		}
+		//Sort the index image number
+		List<Integer> employeeByKey = new ArrayList<>(sliceMap.keySet());
+		Collections.sort(employeeByKey);
 		try {
+			
 			//Check that the number of parsed image number is matching the number of slice
 			if(sliceMap.size() ==imp.getStackSize()) {
-				for(int i=1; i<=imp.getStackSize(); i++){
-					int sliceToadd=sliceMap.get(i);
+				
+				for(int sliceNb : employeeByKey) {
+					int sliceToadd=sliceMap.get(sliceNb);
 					stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
+					
 				}
+				
 			//Else return original stack	
 			}else {
 				return imp.getStack();
 			}
 		}catch(Exception e1){
-			
 			e1.printStackTrace();
 		}
 		
