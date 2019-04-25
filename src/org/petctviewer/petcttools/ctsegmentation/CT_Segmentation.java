@@ -20,8 +20,13 @@ package org.petctviewer.petcttools.ctsegmentation;
 import java.awt.Color;
 import java.io.File;
 import java.io.InputStream;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
@@ -180,9 +185,22 @@ public class CT_Segmentation implements PlugIn {
 				
 				if (batch) {
 					String name = DicomTools.getTag(inputImage, "0010,0010").trim();
-					String id = DicomTools.getTag(inputImage, "0010,0020").trim();
+					name=name.replace("^", "_").toLowerCase();
+					//String id = DicomTools.getTag(inputImage, "0010,0020").trim();
+					DateFormat format=new SimpleDateFormat("YYYYMMdd");
 					String date = DicomTools.getTag(inputImage, "0008,0020").trim();
-					File file=new File(destinationBatch.getAbsolutePath()+File.separator+name+"_"+id+"_"+date+".nrrd");
+					Date studyDate = null;
+					try {
+						studyDate = format.parse("19000101");
+						studyDate = format.parse(date);
+
+					} catch (ParseException e) {
+						e.printStackTrace();
+					}
+					
+					DateFormat datetoString=new SimpleDateFormat("MMM_dd_YYYY",  Locale.ENGLISH);
+					
+					File file=new File(destinationBatch.getAbsolutePath()+File.separator+"msk_"+name+"_"+datetoString.format(studyDate).toLowerCase()+"_ct.nrrd");
 					IJ.log(file.getAbsolutePath());
 					IJ.run(resultatFinal, "Nrrd ... ", "nrrd=["+file.getAbsolutePath()+"]");
 				}
