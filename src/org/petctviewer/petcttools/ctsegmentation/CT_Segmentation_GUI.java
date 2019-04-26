@@ -124,8 +124,8 @@ public class CT_Segmentation_GUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				segmentation.clearBatch();
 				ImagePlus imageInput=WindowManager.getCurrentImage();
-				imageInput.hide();
 				segmentation.setImageInput(imageInput);
+				imageInput.close();
 				lblNa.setText("Stack Selected: "+imageInput.getImageStackSize()+" Slices");
 				btnBatchSegmentation.setEnabled(false);
 				btnLoad.setEnabled(true);
@@ -182,7 +182,7 @@ public class CT_Segmentation_GUI extends JFrame {
 				if(segmentation.inputImageList.size()< 6) {
 					ImagePlus imp=WindowManager.getCurrentImage();
 					segmentation.addImageInputBatch(imp);
-					imp.hide();
+					imp.close();
 					lblNa.setText(segmentation.inputImageList.size() +" stack Selected");
 				}
 				else {

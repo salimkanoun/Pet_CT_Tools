@@ -31,8 +31,11 @@ import java.util.Locale;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
+import org.petctviewer.petcttools.reader.Image_Reader;
+
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.plugin.Concatenator;
 import ij.plugin.ImageCalculator;
 import ij.plugin.PlugIn;
@@ -60,13 +63,14 @@ public class CT_Segmentation implements PlugIn {
 	}
 	
 	public void setImageInput(ImagePlus imp) {
-		//inputImage.add(imp);
-		inputImage=imp;
+		//Reorder images by image position
+		inputImage=Image_Reader.getImpByImagePosition(imp);
 		
 	}
 	
 	public void addImageInputBatch(ImagePlus imp) {
-		inputImageList.add(imp);
+		//Reorder images by image position
+		inputImageList.add(Image_Reader.getImpByImagePosition(imp));
 	}
 	
 	public void clearBatch() {
@@ -136,6 +140,7 @@ public class CT_Segmentation implements PlugIn {
 			
 			private void calculate(int batchnumber) {
 				int numberOfSlice=inputImage.getImageStackSize();
+				
 				Double batch10 = numberOfSlice / (double) 10.0;
 				ArrayList <ImagePlus> resultat = new ArrayList<ImagePlus>();
 				status.setForeground(Color.red);

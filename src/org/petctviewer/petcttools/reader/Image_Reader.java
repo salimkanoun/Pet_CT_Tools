@@ -3,11 +3,14 @@ package org.petctviewer.petcttools.reader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+
+import org.apache.commons.lang.StringUtils;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -80,7 +83,7 @@ public class Image_Reader {
 		ImagePlus imp=new ImagePlus();
 		imp.setStack(stack);
 
-		ImageStack stackSorted=this.sortStack(imp);
+		ImageStack stackSorted=Image_Reader.sortStackByImageNumber(imp);
 		ImagePlus imp2=new ImagePlus();
 		imp2.setStack(stackSorted);
 		imp2.setCalibration(calibration);
@@ -136,7 +139,7 @@ public class Image_Reader {
 	 * @param imp : Original Image plus
 	 * @return ImageStack : New ordered stack image by ImageNumber
 	 */
-	private ImageStack sortStack(ImagePlus imp) {
+	public static ImageStack sortStackByImageNumber(ImagePlus imp) {
 		
 		ImageStack stack2 = new ImageStack(imp.getWidth(), imp.getHeight(), imp.getStack().getColorModel());
 		
@@ -178,6 +181,68 @@ public class Image_Reader {
 		}
 		
 		return stack2;
+	}
+	
+	/**
+	 * Sort stack according to ImageNumber
+	 * In uparseable ImageNumber or non labelled image in stack, return the orignal stack without change
+	 * @param imp : Original Image plus
+	 * @return ImageStack : New ordered stack image by ImageNumber
+	 */
+	public static ImageStack sortStackByImagePosition(ImagePlus imp) {
+		
+		ImageStack stack2 = new ImageStack(imp.getWidth(), imp.getHeight(), imp.getStack().getColorModel());
+		
+		HashMap<Integer,Integer> sliceMap=new HashMap<Integer,Integer>();
+		
+		for(int i=1; i<=imp.getImageStackSize(); i++) {
+			
+			try {
+				imp.setSlice(i);
+				String imagePosition=DicomTools.getTag(imp, "0020,0032").trim();
+				String[] postionsValues=StringUtils.split(imagePosition, "\\");
+				sliceMap.put(Integer.parseInt(postionsValues[2]), i);
+			
+			}catch(Exception e1){
+				System.out.println("error");
+				IJ.handleException(e1);
+				//If parse error of slice number return the original stack
+				return imp.getStack();
+			}
+		}
+		//Sort the index image number
+		List<Integer> employeeByKey = new ArrayList<>(sliceMap.keySet());
+		Collections.sort(employeeByKey, Collections.reverseOrder());
+		try {
+			
+			//Check that the number of parsed image number is matching the number of slice
+			if(sliceMap.size() ==imp.getStackSize()) {
+				
+				for(int sliceNb : employeeByKey) {
+					int sliceToadd=sliceMap.get(sliceNb);
+					stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
+					
+				}
+				
+			//Else return original stack	
+			}else {
+				return imp.getStack();
+			}
+		}catch(Exception e1){
+			e1.printStackTrace();
+		}
+		
+		return stack2;
+	}
+	
+	public static ImagePlus getImpByImagePosition(ImagePlus imp) {
+		ImageStack stack=Image_Reader.sortStackByImagePosition(imp);
+		ImagePlus imp2=new ImagePlus();
+		imp2.setStack(stack);
+		imp2.setCalibration(imp.getCalibration());
+		imp2.setProperty("Info", imp.getStack().getSliceLabel(1));
+		imp2.setTitle(DicomTools.getTag(imp, "0010,0010")+"-"+DicomTools.getTag(imp, "0008,0022")+"-"+DicomTools.getTag(imp, "0008,103E"));
+		return imp2;
 	}
 	
 	private String simpleModifyBF(String info) {
