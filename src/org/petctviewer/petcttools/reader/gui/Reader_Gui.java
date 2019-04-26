@@ -108,19 +108,20 @@ public class Reader_Gui extends JFrame {
 				btnScanFolder.setEnabled(false);
 				
 				SwingWorker<Void,Void> worker=new SwingWorker<Void,Void>() {
-
+					Read_Local_Dicom reader= new Read_Local_Dicom();
 					@Override
 					protected Void doInBackground() throws Exception {
-						Read_Local_Dicom reader= new Read_Local_Dicom();
+					
 						reader.scanFolder(new File(path), btnScanFolder);
-						updateSerieTable(reader.dicomMap);
-						sorter.sort();
-						gui.pack();
+					
 						return null;
 					}
 					
 					@Override
 				  	protected void done() {
+						updateSerieTable(reader.dicomMap);
+						sorter.sort();
+						gui.pack();
 						btnScanFolder.setEnabled(true);
 						btnScanFolder.setText("Scan Folder");
 					}
@@ -168,6 +169,7 @@ public class Reader_Gui extends JFrame {
 		sortKeys.add(new RowSorter.SortKey(1, SortOrder.ASCENDING));
 		sortKeys.add(new RowSorter.SortKey(2, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
+
 		tableStudy.setRowSorter(sorter);
 		
 		tableStudy.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
@@ -224,11 +226,7 @@ public class Reader_Gui extends JFrame {
 						if(tableSeries.getSelectedRowCount()!=0) {
 							int[] rows=tableSeries.getSelectedRows();
 							ArrayList<ImagePlus> imagesPlus=new ArrayList<ImagePlus>();
-							
-
-							//SK A TESTER
 							for(int row : rows) {
-								
 								Series_Details seriesDetails=(Series_Details) tableSeries.getValueAt(row, 5);
 								ctOrPet(tableSeries.getValueAt(row, 1).toString());
 								Object sourceFiles=tableSeries.getValueAt(row, 4);
@@ -242,8 +240,6 @@ public class Reader_Gui extends JFrame {
 								ImagePlus image=reader.getImagePlus();
 								imagesPlus.add(image);
 								image.show();
-								
-								
 								
 							}
 								
@@ -375,6 +371,9 @@ public class Reader_Gui extends JFrame {
 	private void updateSerieTable(HashMap<String, ArrayList<Series_Details>> studyMap) {
 		//Empty the model before filling it
 		emptyStudySerieTable();
+		if(studyMap==null) {
+			return;
+		}
 		for(String studyUID : studyMap.keySet()) {
 			
 			ArrayList<Series_Details> details=studyMap.get(studyUID);

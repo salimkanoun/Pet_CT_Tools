@@ -35,7 +35,6 @@ import org.petctviewer.petcttools.reader.Image_Reader;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.ImageStack;
 import ij.plugin.Concatenator;
 import ij.plugin.ImageCalculator;
 import ij.plugin.PlugIn;
