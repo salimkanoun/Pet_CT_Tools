@@ -2,6 +2,7 @@ package org.petctviewer.petcttools.deepsegment;
 
 import java.io.IOException;
 
+import org.deeplearning4j.nn.graph.ComputationGraph;
 import org.deeplearning4j.nn.modelimport.keras.KerasModelImport;
 import org.deeplearning4j.nn.modelimport.keras.exceptions.InvalidKerasConfigurationException;
 import org.deeplearning4j.nn.modelimport.keras.exceptions.UnsupportedKerasConfigurationException;
@@ -33,8 +34,11 @@ public class Deep_Segment {
 		// load the model
 		String simpleMlp = new ClassPathResource("model.h5").getFile().getPath();
 		
-		MultiLayerNetwork model = KerasModelImport.
-		                    importKerasSequentialModelAndWeights(simpleMlp);
+		ComputationGraph model = KerasModelImport.
+				importKerasModelAndWeights(simpleMlp);
+		
+		MultiLayerNetwork model2 = KerasModelImport.
+                importKerasSequentialModelAndWeights(simpleMlp);
 		
 		// make a random sample
 		INDArray features =Nd4j.create(new double[240][240][240]);
