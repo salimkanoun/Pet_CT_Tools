@@ -1,19 +1,9 @@
 package org.petctviewer.petcttools.deepsegment;
 
 import java.io.IOException;
-import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.deeplearning4j.nn.graph.ComputationGraph;
-import org.deeplearning4j.nn.modelimport.keras.KerasModelImport;
-import org.deeplearning4j.nn.modelimport.keras.exceptions.InvalidKerasConfigurationException;
-import org.deeplearning4j.nn.modelimport.keras.exceptions.UnsupportedKerasConfigurationException;
-import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
-import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.factory.Nd4j;
-import org.nd4j.linalg.io.ClassPathResource;
 import org.tensorflow.Graph;
 import org.tensorflow.Operation;
 import org.tensorflow.SavedModelBundle;
@@ -37,25 +27,21 @@ public class Deep_Segment {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (InvalidKerasConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnsupportedKerasConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 	}
 
 	
-	public void test() throws IOException, InvalidKerasConfigurationException, UnsupportedKerasConfigurationException {
+	public void test() throws IOException {
 		
 
-		SavedModelBundle savedModelBundle = SavedModelBundle.load("C:\\Users\\kanoun_s\\ownCloud2\\DeepLearning-Thomas\\0513_savemodel\\saved_model_v3", "serve");
+		SavedModelBundle savedModelBundle = SavedModelBundle.load("C:\\Users\\kanoun_s\\ownCloud2\\DeepLearning-Thomas\\RESULTS\\unet_model", "serve");
+
 
 		Graph graph = savedModelBundle.graph();
 		
-		Iterator<Operation> it = graph.operations();
 
+		Iterator<Operation> it = graph.operations();
+		
 		while (it.hasNext()) {
 			Operation op=it.next();
 			System.out.println(op.numOutputs());
@@ -96,8 +82,8 @@ public class Deep_Segment {
 		fb.position(0);
 		System.out.println(fb.toString());
 		
-		Tensor<Float> tensorShort = Tensor.create(new long[] {240L,240L,240L}, fb);
-		
+		Tensor<Float> tensorShort = Tensor.create(new long[] {240,240,240}, fb);
+		System.out.println(tensorShort.dataType());
 		System.out.println(tensorShort.shape());
 		
 		/*
@@ -133,7 +119,7 @@ public class Deep_Segment {
 		
 
 
-		Tensor result=savedModelBundle.session().runner().feed("input", tensorShort).fetch("SALIM_OUTPUT").run().get(0);
+		Tensor result=savedModelBundle.session().runner().feed("serving_default_INPUT", tensorShort).fetch("OUTPUT/kernel").run().get(0);
 		
 		System.out.println(result.dataType());
 		System.out.println(result.numDimensions());
@@ -175,7 +161,7 @@ public class Deep_Segment {
 		
 		return array2d; 
 	}
-	
+	/*
 	public void keras() throws IOException, InvalidKerasConfigurationException, UnsupportedKerasConfigurationException {
 		
 		String simpleMlp = new ClassPathResource("saved_model.h5").getFile().getPath();
@@ -187,7 +173,7 @@ public class Deep_Segment {
                 importKerasSequentialModelAndWeights(simpleMlp);*/
 		
 		// make a random sample
-		INDArray features =Nd4j.create(new double[240][240][240]);
+		//INDArray features =Nd4j.create(new double[240][240][240]);
 		
 		/*for (int i=0; i<inputs; i++) 
 			
@@ -195,5 +181,5 @@ public class Deep_Segment {
 		*/
 		// get the prediction
 		//INDArray prediction = model.output(features);
-	}
+	//}*/
 }
