@@ -3,10 +3,13 @@ package org.petctviewer.petcttools.deepsegment;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.Iterator;
+import java.util.List;
 
 import org.tensorflow.Graph;
 import org.tensorflow.Operation;
 import org.tensorflow.SavedModelBundle;
+import org.tensorflow.SavedModelBundle.Loader;
+import org.tensorflow.Session.Runner;
 import org.tensorflow.Tensor;
 
 import ij.IJ;
@@ -34,26 +37,21 @@ public class Deep_Segment {
 	public void test() throws IOException {
 		
 
-		SavedModelBundle savedModelBundle = SavedModelBundle.load("C:\\Users\\kanoun_s\\ownCloud2\\DeepLearning-Thomas\\RESULTS\\unet_model", "serve");
 
+		SavedModelBundle savedModelBundle = SavedModelBundle.load("C:\\Users\\kanoun_s\\ownCloud2\\DeepLearning-Thomas\\RESULTS\\saved_model", "serve");
 
+	
 		Graph graph = savedModelBundle.graph();
 		
-
-		Iterator<Operation> it = graph.operations();
 		
+		Iterator<Operation> it = graph.operations();
+
 		while (it.hasNext()) {
 			Operation op=it.next();
 			System.out.println(op.numOutputs());
-			System.out.println(op.toString());
 			System.out.println(op.type());
-			
 			System.out.println(op.name());
 		}
-		
-		System.out.println(graph.toString());
-		
-		
 		
 		
 		Opener opener = new Opener();
@@ -62,11 +60,11 @@ public class Deep_Segment {
 		IJ.run(image, "32-bit", "");
 		IJ.run(image, "Size...", "width=240 height=240 average interpolation=Bicubic");
 		
-		//new TensorFlowInferenceInterface();
+
 		
 		Resizer resize=new Resizer();
 		ImagePlus imp2=resize.zScale(image, 240, ImageProcessor.BICUBIC);
-		imp2.show();
+
 		FloatBuffer fb = FloatBuffer.allocate(imp2.getHeight()*imp2.getWidth()*imp2.getStackSize()); 
 		
 		for(int i=1; i<=imp2.getStackSize(); i++) {
@@ -82,9 +80,10 @@ public class Deep_Segment {
 		fb.position(0);
 		System.out.println(fb.toString());
 		
-		Tensor<Float> tensorShort = Tensor.create(new long[] {240,240,240}, fb);
-		System.out.println(tensorShort.dataType());
-		System.out.println(tensorShort.shape());
+
+		
+		Tensor<Float> tensorShort = Tensor.create(new long[] {1, 240, 240, 240, 1}, fb);
+
 		
 		/*
 		ArrayList<float[][]> futurTensor=new ArrayList<float[][]>();
@@ -118,15 +117,13 @@ public class Deep_Segment {
 		//Tensor input =new Tensor(TensorFlow., new TensorShape(2,5)); 
 		
 
+		Runner runner=savedModelBundle.session().runner().feed("serving_default_SALIM_INPUT:0", tensorShort).
+				fetch("StatefulPartitionedCall:0");
+		
+		List<Tensor<?>> tensors=runner.run();
+		
 
-		Tensor result=savedModelBundle.session().runner().feed("serving_default_INPUT", tensorShort).fetch("OUTPUT/kernel").run().get(0);
-		
-		System.out.println(result.dataType());
-		System.out.println(result.numDimensions());
-		System.out.println(result.numElements());
-		System.out.println(result.toString());
-		
-		
+		System.out.println("ici");
 
 		// load the model
 		/*String simpleMlp = new ClassPathResource("model.h5").getFile().getPath();
