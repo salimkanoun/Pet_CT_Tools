@@ -192,7 +192,7 @@ public class Image_Reader {
 		
 		ImageStack stack2 = new ImageStack(imp.getWidth(), imp.getHeight(), imp.getStack().getColorModel());
 		
-		HashMap<Integer,Integer> sliceMap=new HashMap<Integer,Integer>();
+		HashMap<Double,Integer> sliceMap=new HashMap<Double,Integer>();
 		
 		for(int i=1; i<=imp.getImageStackSize(); i++) {
 			
@@ -200,7 +200,7 @@ public class Image_Reader {
 				imp.setSlice(i);
 				String imagePosition=DicomTools.getTag(imp, "0020,0032").trim();
 				String[] postionsValues=StringUtils.split(imagePosition, "\\");
-				sliceMap.put(Integer.parseInt(postionsValues[2]), i);
+				sliceMap.put(Double.parseDouble(postionsValues[2]), i);
 			
 			}catch(Exception e1){
 				System.out.println("error");
@@ -210,14 +210,14 @@ public class Image_Reader {
 			}
 		}
 		//Sort the index image number
-		List<Integer> employeeByKey = new ArrayList<>(sliceMap.keySet());
-		Collections.sort(employeeByKey, Collections.reverseOrder());
+		List<Double> sliceLocation = new ArrayList<>(sliceMap.keySet());
+		Collections.sort(sliceLocation, Collections.reverseOrder());
 		try {
 			
 			//Check that the number of parsed image number is matching the number of slice
 			if(sliceMap.size() ==imp.getStackSize()) {
 				
-				for(int sliceNb : employeeByKey) {
+				for(double sliceNb : sliceLocation) {
 					int sliceToadd=sliceMap.get(sliceNb);
 					stack2.addSlice(imp.getStack().getSliceLabel(sliceToadd),imp.getStack().getProcessor(sliceToadd));	
 					
