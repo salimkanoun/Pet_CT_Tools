@@ -17,7 +17,6 @@ public class Dicom_Reader implements PlugIn{
 		gui.pack();
 		gui.setLocationRelativeTo(null);
 		gui.setVisible(true);
-
 	}
 
 	@Override
