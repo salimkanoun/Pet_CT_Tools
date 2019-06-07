@@ -152,7 +152,6 @@ public class Image_Reader {
 				sliceMap.put(Integer.parseInt(imageNumber), i);	
 			
 			}catch(Exception e1){
-				System.out.println("error");
 				//If parse error of slice number return the original stack
 				return imp.getStack();
 			}
