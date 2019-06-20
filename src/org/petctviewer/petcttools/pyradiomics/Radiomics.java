@@ -17,11 +17,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -48,33 +51,42 @@ public class Radiomics {
 		String json;
 		
 		ProcessBuilder pb = new ProcessBuilder("pyradiomics", image , mask ,"--format", "json", "--param", settingsYaml.getAbsolutePath().toString());
-		pb.redirectErrorStream(true); 
         Process process = pb.start();  
-        //OutputStream stdin = process.getOutputStream(); 
-        //InputStream stderr = process.getErrorStream(); 
+        OutputStream stdin = process.getOutputStream(); 
+        InputStream stderr = process.getErrorStream(); 
         InputStream stdout = process.getInputStream();  
+
 		 
         BufferedReader reader = new BufferedReader (new InputStreamReader(stdout));
+        BufferedReader readerError = new BufferedReader (new InputStreamReader(stderr));
 
-		 StringBuilder builder = new StringBuilder();
+		 StringBuilder builderJson = new StringBuilder();
+		 StringBuilder builderError = new StringBuilder();
 		 String line = null;
 		 JsonObject resultsJson=null;
+		 
 		 while ( (line = reader.readLine()) != null) {
-			 	//If JSON Object parse it
-			 	if (line.startsWith("{")){
-			 		json=line;
-			 		json=json.replace("NaN", "\"NaN\"");
-			 		resultsJson=readJson(json);
-			 	}
-			 	//if not add to string builder and log it
-			 	else{
-			 		builder.append(line);
-			 		builder.append(System.getProperty("line.separator"));
-			 	}
+			 	System.out.println(line);
+			 	builderJson.append(line);
+
+			 	
 			 	
 		 }
+		 
+		 resultsJson=readJson(builderJson.toString());
+		 
+		 while( (line = readerError.readLine()) != null) {
+			 builderError.append(line);
+			 builderError.append(System.getProperty("line.separator"));
+			 
+		 }
+		 
 		 process.destroy();
-		 JOptionPane.showMessageDialog(null, builder.toString(),"info", JOptionPane.INFORMATION_MESSAGE);
+		 
+		 if(StringUtils.isEmpty(builderError.toString())) {
+			 builderError.append("Success, no warning");
+		 }
+		 JOptionPane.showMessageDialog(null, builderError.toString(),"info", JOptionPane.INFORMATION_MESSAGE);
 		 System.out.println(resultsJson.toString());
 		 
 		 return resultsJson;
@@ -218,7 +230,7 @@ public class Radiomics {
 		
 		JsonParser parser = new JsonParser();
 				
-		resultsJson= parser.parse(json).getAsJsonObject();
+		resultsJson= parser.parse(json).getAsJsonArray().get(0).getAsJsonObject();
 		
 		 return resultsJson;
 	}

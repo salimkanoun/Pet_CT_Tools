@@ -137,7 +137,7 @@ public class OptionsRadiomics extends JDialog {
 		JPanel panel_4 = new JPanel();
 		buttonPane.add(panel_4);
 		
-		JLabel lblDocumentationOnHttpwwwradiomicsio = new JLabel("Documentation : http://www.radiomics.io/");
+		JLabel lblDocumentationOnHttpwwwradiomicsio = new JLabel("Documentation : http://www.radiomics.io/  - Require pyRadiomics 2.2.0");
 		panel_4.add(lblDocumentationOnHttpwwwradiomicsio);
 		lblDocumentationOnHttpwwwradiomicsio.setHorizontalAlignment(SwingConstants.CENTER);
 		
