@@ -51,18 +51,18 @@
   <dependencies>
 	
 	<dependency>
-	<groupId>sc.fiji</groupId>
-	<artifactId>IO_</artifactId>
+		<groupId>sc.fiji</groupId>
+		<artifactId>IO_</artifactId>
 	</dependency>
 
 	<dependency>
-	<groupId>org.apache.commons</groupId>
-	<artifactId>commons-lang3</artifactId>
+		<groupId>org.apache.commons</groupId>
+		<artifactId>commons-lang3</artifactId>
 	</dependency>
 
 	<dependency>
-	<groupId>com.google.code.gson</groupId>
-	<artifactId>gson</artifactId>
+		<groupId>com.google.code.gson</groupId>
+		<artifactId>gson</artifactId>
 	</dependency>
 	
 	<dependency>
@@ -72,23 +72,23 @@
 	</dependency>
 	
 	<dependency>
-    <groupId>ome</groupId>
-    <artifactId>formats-gpl</artifactId>
+	    <groupId>ome</groupId>
+	    <artifactId>formats-gpl</artifactId>
     </dependency>
 	
 	<dependency>
-    <groupId>org.openmicroscopy</groupId>
-    <artifactId>ome-xml</artifactId>
+	    <groupId>org.openmicroscopy</groupId>
+	    <artifactId>ome-xml</artifactId>
     </dependency>
 
 	<dependency>
-    <groupId>org.openmicroscopy</groupId>
-    <artifactId>ome-common</artifactId>
+	    <groupId>org.openmicroscopy</groupId>
+	    <artifactId>ome-common</artifactId>
     </dependency>
 	
 	<dependency>
-    <groupId>ome</groupId>
-    <artifactId>bio-formats_plugins</artifactId>
+	    <groupId>ome</groupId>
+	    <artifactId>bio-formats_plugins</artifactId>
     </dependency>
 
 	<dependency>
@@ -98,8 +98,8 @@
 	</dependency>
 	
 	<dependency>
-    <groupId>sc.fiji</groupId>
-    <artifactId>Trainable_Segmentation</artifactId>
+	    <groupId>sc.fiji</groupId>
+	    <artifactId>Trainable_Segmentation</artifactId>
     </dependency>
     
     <dependency>
