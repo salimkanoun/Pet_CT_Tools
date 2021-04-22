@@ -50,7 +50,7 @@ public class Read_Local_Dicom {
 		
 		File[] files = folder.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
-		        return (name.toLowerCase().endsWith(".dcm") ||name.toLowerCase().endsWith(".img") || !name.contains(".") );
+		        return (name.toLowerCase().endsWith(".dcm") ||name.toLowerCase().endsWith(".img") || name.toLowerCase().endsWith(".ima") || !name.contains(".") );
 		    }
 		});
 		

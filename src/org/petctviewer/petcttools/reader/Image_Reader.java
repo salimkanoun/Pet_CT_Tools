@@ -31,9 +31,11 @@ public class Image_Reader {
 		this.compressed=compressed;
 		File[] files = path.listFiles(new FilenameFilter() {
 		    public boolean accept(File dir, String name) {
-		        return (name.toLowerCase().endsWith(".dcm") || !name.contains(".") );
+		        return (name.toLowerCase().endsWith(".dcm") || name.toLowerCase().endsWith(".img") ||name.toLowerCase().endsWith(".ima") || !name.contains(".") );
 		    }
 		});
+		
+		System.out.println(files);
 		
 		
 		readFiles(files);
