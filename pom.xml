@@ -26,11 +26,11 @@
   <repositories>
     <repository>
       <id>java.net</id>
-      <url>http://dev.loci.wisc.edu/maven2/releases/</url>
+      <url>https://dev.loci.wisc.edu/maven2/releases/</url>
     </repository>
     <repository>
 	<id>imagej.public</id>
-	<url>http://maven.imagej.net/content/groups/public</url>
+	<url>https://maven.imagej.net/content/groups/public</url>
 	 </repository>
 	 <repository>
       <id>ome</id>
@@ -40,7 +40,7 @@
      <repository>
       <id>www.dcm4che.org</id>
       <name>dcm4che Repository</name>
-      <url>http://maven.dcm4che.org</url>
+      <url>https://maven.dcm4che.org</url>
     </repository>
  </repositories>
  
